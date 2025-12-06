@@ -52,7 +52,7 @@
 			}
 			catch (Exception ex)
 			{
-				//await LogoutAsync();
+				await LogoutAsync();
 			}
 
 			return null;
@@ -94,22 +94,18 @@
 
 		private async Task SaveTokenAsync(AuthResponse auth)
 		{
-			// 1. Save in local storage
 			await _localStorage.SetItemAsync(TokenKey, auth.Token);
 			await _localStorage.SetItemAsync(ExpiresAtKey, auth.ExpiresAt);
 
-			// 2. Set Authorization header for current HttpClient
 			_httpClient.DefaultRequestHeaders.Authorization =
 				new AuthenticationHeaderValue("Bearer", auth.Token);
 		}
 
 		public async Task LogoutAsync()
 		{
-			// Clear local storage
 			await _localStorage.RemoveItemAsync(TokenKey);
 			await _localStorage.RemoveItemAsync(ExpiresAtKey);
 
-			// Remove Authorization header
 			_httpClient.DefaultRequestHeaders.Authorization = null;
 		}
 

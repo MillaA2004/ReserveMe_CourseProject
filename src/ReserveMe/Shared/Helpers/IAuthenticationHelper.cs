@@ -8,6 +8,8 @@
 
 		Task<string> LoginAsync(LoginUserDto userDto);
 
+		Task LogoutAsync();
+
 		Task<string> ReservationsAsync(LoginUserDto userDto);
 	}
 }

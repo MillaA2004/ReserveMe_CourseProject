@@ -1,8 +1,10 @@
 namespace ReserveMe
 {
 	using Blazored.LocalStorage;
+	using Microsoft.AspNetCore.Components.Authorization;
 	using Microsoft.AspNetCore.Components.Web;
 	using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+	using Shared.Authorization;
 	using Shared.Helpers;
 	using Shared.Providers;
 
@@ -23,7 +25,10 @@ namespace ReserveMe
 
 			// Authentication helper
 			builder.Services.AddScoped<IAuthenticationHelper, AuthenticationHelper>();
+			builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
 
+			builder.Services.AddAuthorizationCore();
+			
 			await builder.Build().RunAsync();
 		}
 	}
