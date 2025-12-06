@@ -3,6 +3,7 @@
 	using System.Net.Http.Headers;
 	using System.Threading.Tasks;
 	using Blazored.LocalStorage;
+	using Shared.Authorization;
 	using Shared.Dtos;
 	using Shared.Providers;
 	using Shared.Requests;
@@ -92,15 +93,6 @@
 			return null;
 		}
 
-		private async Task SaveTokenAsync(AuthResponse auth)
-		{
-			await _localStorage.SetItemAsync(TokenKey, auth.Token);
-			await _localStorage.SetItemAsync(ExpiresAtKey, auth.ExpiresAt);
-
-			_httpClient.DefaultRequestHeaders.Authorization =
-				new AuthenticationHeaderValue("Bearer", auth.Token);
-		}
-
 		public async Task LogoutAsync()
 		{
 			await _localStorage.RemoveItemAsync(TokenKey);
@@ -109,35 +101,13 @@
 			_httpClient.DefaultRequestHeaders.Authorization = null;
 		}
 
-
-
-		// TEST AUTHORIZED CONTROLLER ATTRIBUTES AND JWT TOKEN
-		public async Task<string> ReservationsAsync(LoginUserDto userDto)
+		private async Task SaveTokenAsync(AuthResponse auth)
 		{
-			try
-			{
-				if (userDto != null)
-				{
-					var request = new LoginUserRequest
-					{
-						Email = userDto.Email,
-						Password = userDto.Password
-					};
+			await _localStorage.SetItemAsync(TokenKey, auth.Token);
+			await _localStorage.SetItemAsync(ExpiresAtKey, auth.ExpiresAt);
 
-					var result = await _provider.PostAsync<LoginUserRequest, AuthResponse>(Endpoints.Reservations, request);
-
-					if (result != null && !string.IsNullOrEmpty(result.Token))
-					{
-						return result.Token;
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				//await LogoutAsync();
-			}
-
-			return null;
+			_httpClient.DefaultRequestHeaders.Authorization =
+				new AuthenticationHeaderValue("Bearer", auth.Token);
 		}
 	}
 }

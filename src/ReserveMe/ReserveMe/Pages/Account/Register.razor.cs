@@ -20,7 +20,7 @@
 
 			if (!string.IsNullOrEmpty(result))
 			{
-				navManager?.NavigateTo("/login");
+				navManager?.NavigateTo("/");
 			}
 			else
 			{

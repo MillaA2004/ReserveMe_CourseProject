@@ -2,15 +2,6 @@
 
 <h3>Login</h3>
 
-<button @onclick="CallAuthorizedEndpoint">
-    Test Authorized Call
-</button>
-
-@if (!string.IsNullOrEmpty(TestResult))
-{
-    <p>@TestResult</p>
-}
-
 <EditForm Model="loginUser" OnValidSubmit="LoginUser">
     <DataAnnotationsValidator />
     <ValidationSummary />

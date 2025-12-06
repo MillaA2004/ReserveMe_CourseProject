@@ -3,7 +3,7 @@
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Identity;
 	using Microsoft.AspNetCore.Mvc;
-	using Shared;
+	using Shared.Authorization;
 	using Shared.Requests;
 
 	// only authenticated users can access this now
@@ -13,6 +13,7 @@
 	{
 		//TODO: Test purposes only - remove later
 		[HttpPost("reserve")]
+		[Authorize(Roles = "SuperAdmin")]
 		public ActionResult<AuthResponse> Reserve([FromBody] LoginUserRequest request)
 		{
 			//TEST

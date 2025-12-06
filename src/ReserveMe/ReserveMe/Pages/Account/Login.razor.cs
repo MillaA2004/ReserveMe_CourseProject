@@ -14,43 +14,17 @@
 
 		private LoginUserDto loginUser = new LoginUserDto();
 
-		private string? TestResult;
-
 		public async Task LoginUser()
 		{
 			var result = await _authHelper?.LoginAsync(loginUser)!;
 
 			if (!string.IsNullOrEmpty(result))
 			{
-				navManager?.NavigateTo("/success");
+				navManager?.NavigateTo("/");
 			}
 			else
 			{
 				navManager?.NavigateTo("/401");
-			}
-		}
-
-		//TEST
-		private async Task CallAuthorizedEndpoint()
-		{
-			TestResult = "Calling authorized endpoint...";
-
-			try
-			{
-				var result = await _authHelper?.ReservationsAsync(loginUser)!;
-
-				if (!string.IsNullOrEmpty(result))
-				{
-					TestResult = $"✅ Success: {result}";
-				}
-				else
-				{
-					TestResult = $"❌ Failed";
-				}
-			}
-			catch (Exception ex)
-			{
-				TestResult = $"Error: {ex.Message}";
 			}
 		}
 	}
