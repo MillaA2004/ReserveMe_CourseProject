@@ -14,6 +14,12 @@
 
 		#endregion
 
+		#region Venues
+
+		public static string GetVenues = $"{BaseAddressApi}venues/getAll";
+
+		#endregion
+
 		public static string Reservations = $"{BaseAddressApi}reservations/reserve";
 	}
 }
