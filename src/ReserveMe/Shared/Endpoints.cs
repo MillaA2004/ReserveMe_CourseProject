@@ -18,6 +18,14 @@
 
 		public static string GetVenues = $"{BaseAddressApi}venues/getAll";
 
+		public static string CreateVenue = $"{BaseAddressApi}venues/create";
+
+		#endregion
+
+		#region VenueTypes
+
+		public static string GetVenueTypes = $"{BaseAddressApi}venueTypes/getAll";
+
 		#endregion
 
 		public static string Reservations = $"{BaseAddressApi}reservations/reserve";

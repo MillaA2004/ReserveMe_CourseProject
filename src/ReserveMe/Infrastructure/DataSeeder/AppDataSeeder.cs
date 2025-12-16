@@ -42,7 +42,7 @@
 			await SeedAppUsersAsync(cancellationToken);
 
 			// 3. Seed Venues with VenueTypes
-			var menus = await SeedVenuesAsync(cancellationToken);
+			var venues = await SeedVenuesAsync(cancellationToken);
 		}
 
 		private async Task<List<Venue>> SeedVenuesAsync(CancellationToken cancellationToken)

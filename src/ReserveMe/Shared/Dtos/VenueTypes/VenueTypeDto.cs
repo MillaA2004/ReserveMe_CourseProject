@@ -7,7 +7,5 @@
 		public int Id { get; set; }
 
 		public string Name { get; set; }
-
-		public List<VenueAdminDto> Venues { get; set; } = new List<VenueAdminDto>();
 	}
 }

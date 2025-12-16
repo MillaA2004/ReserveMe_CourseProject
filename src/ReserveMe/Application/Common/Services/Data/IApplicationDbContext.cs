@@ -18,5 +18,7 @@
 		DbSet<VenueFavorite> VenueFavorites => Set<VenueFavorite>();
 
 		DbSet<VenueReview> VenueReviews => Set<VenueReview>();
+
+		Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 	}
 }

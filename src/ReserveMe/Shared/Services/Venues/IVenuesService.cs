@@ -5,5 +5,7 @@
 	public interface IVenuesService
 	{
 		Task<List<VenueAdminDto>> GetVenues();
+
+		Task CreateVenueAsync(VenueCreateDto venueDto);
 	}
 }

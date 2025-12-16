@@ -7,6 +7,7 @@ using Shared.Helpers;
 using Shared.Providers;
 using ReserveMe;
 using Shared.Services.Venues;
+using Shared.Services.VenueTypes;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -27,6 +28,7 @@ builder.Services.AddScoped<IApiProvider, ApiProvider>();
 builder.Services.AddScoped<IAuthenticationHelper, AuthenticationHelper>();
 builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
 builder.Services.AddScoped<IVenuesService, VenuesService>();
+builder.Services.AddScoped<IVenueTypesService, VenueTypesService>();
 
 builder.Services.AddAuthorizationCore();
 
