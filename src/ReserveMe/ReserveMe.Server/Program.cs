@@ -1,13 +1,14 @@
 using System.Text;
+using Application;
 using Domain.Entities;
 using Infrastructure;
 using Infrastructure.DataSeeder;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -93,6 +94,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+	FileProvider = new PhysicalFileProvider(
+		Path.Combine(app.Environment.ContentRootPath, "StaticFiles")),
+	RequestPath = "/StaticFiles"
+});
 
 using (var scope = app.Services.CreateScope())
 {

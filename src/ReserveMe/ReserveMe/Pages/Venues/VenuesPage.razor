@@ -57,8 +57,7 @@
                                                             }
                                                             else
                                                             {
-                                                                @* Some default empty image *@
-                                                                @* <img src="@($"{NavigationManager.BaseUri}assets/images/company-logos/1.png")" alt=""> *@
+                                                                <img src="@($"../assets/images/emptyImg.jpg")" alt="">
                                                             }
                                                         </span>
                                                     </div>
@@ -136,16 +135,41 @@
                             </button>
                         </div>
 
-                        <div class="col-xl-12">
-                            <label class="form-label" for="venue-logo">Logo</label>
-                            <InputFile OnChange="OnLogoSelected" />
-                            <ValidationMessage For="@(() => venueDto.LogoUrl)" class="text-danger" />
-                        </div>
+                        <div class="row gy-3">
 
-                        <div class="col-xl-12">
-                            <label class="form-label" for="venue-image">Image</label>
-                            <InputFile OnChange="OnImageSelected" />
-                            <ValidationMessage For="@(() => venueDto.ImageUrl)" class="text-danger" />
+                            <!-- LOGO PICKER -->
+                            <div class="col-xl-6">
+                                <div class="text-center">
+                                    <div class="fw-medium mb-2">Logo</div>
+
+                                    <span class="avatar avatar-xxl avatar-rounded position-relative">
+                                        <img src="@SelectedLogo" alt="Logo" />
+                                        <span class="badge rounded-pill bg-primary avatar-badge">
+                                            <InputFile OnChange="OnLogoFileSelected" accept="image/*" class="position-absolute w-100 h-100 op-0" />
+                                            <i class="fe fe-camera"></i>
+                                        </span>
+                                    </span>
+
+                                    <ValidationMessage For="@(() => venueDto.LogoUrl)" class="text-danger" />
+                                </div>
+                            </div>
+
+                            <!-- IMAGE PICKER -->
+                            <div class="col-xl-6">
+                                <div class="text-center">
+                                    <div class="fw-medium mb-2">Venue image</div>
+
+                                    <span class="avatar avatar-xxl avatar-rounded position-relative">
+                                        <img src="@SelectedVenueImage" alt="Venue image" />
+                                        <span class="badge rounded-pill bg-primary avatar-badge">
+                                            <InputFile OnChange="OnVenueImageFileSelected" accept="image/*" class="position-absolute w-100 h-100 op-0" />
+                                            <i class="fe fe-camera"></i>
+                                        </span>
+                                    </span>
+
+                                    <ValidationMessage For="@(() => venueDto.ImageUrl)" class="text-danger" />
+                                </div>
+                            </div>
                         </div>
 
                         <div class="modal-body px-4">
