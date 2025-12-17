@@ -62,5 +62,27 @@
 		}
 
 		#endregion
+
+		#region DELETE
+
+		public async Task DeleteVenue(int id)
+		{
+			try
+			{
+				var model = new DeleteVenueRequest()
+				{
+					VenueId = id
+				};
+
+				await _provider.DeleteAsync<DeleteVenueRequest, object>(Endpoints.DeleteVenue, model);
+			}
+			catch (Exception ex)
+			{
+				//TODO: Log errors
+				//this._logger.LogError(ex.Message);
+			}
+		}
+
+		#endregion
 	}
 }

@@ -7,5 +7,7 @@
 		Task<List<VenueAdminDto>> GetVenues();
 
 		Task CreateVenueAsync(VenueCreateDto venueDto);
+
+		Task DeleteVenue(int id);
 	}
 }

@@ -33,5 +33,19 @@
 		}
 
 		#endregion
+
+		#region DELETE
+		[HttpDelete("delete")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesDefaultResponseType]
+		public async Task<IActionResult> DeleteVenue(DeleteVenueRequest request)
+		{
+			await Mediator.Send(new DeleteVenueCommand(request.VenueId));
+
+			return NoContent();
+		}
+		#endregion
 	}
 }

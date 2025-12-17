@@ -97,13 +97,10 @@
                                                     <a class="btn btn-icon btn-sm btn-info-light btn-wave" href="/admin/venues/@venue.Id" title="Manage venue properties">
                                                         <i class="ri-edit-line"></i>
                                                     </a>
-                                                    <a class="btn btn-icon btn-sm btn-info-light btn-wave" href="/admin/venues/@venue.Id/settings">
-                                                        <i class="ri-settings-4-fill"></i>
-                                                    </a>
-                                                    @* <a href="javascript:void(0);" class="btn btn-icon btn-sm btn-danger-light btn-wave"
-                                                       @onclick='() => ShowDeleteConfirmation("Delete venues", venue.VenueId, venue.Name)'>
+                                                    <a href="javascript:void(0);" class="btn btn-icon btn-sm btn-danger-light btn-wave"
+                                                       @onclick='() => ShowDeleteConfirmation("Delete Venue", venue.Id, venue.Name)'>
                                                         <i class="ri-delete-bin-line"></i>
-                                                    </a> *@
+                                                    </a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -244,6 +241,28 @@
                 </div>
             </div>
         </EditForm>
+
+        @if (isDeleteModalVisible)
+        {
+            <div class="modal-backdrop fade show"></div>
+            <div class="modal d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h6 class="modal-title">@title</h6>
+                            <button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p style="width: 100%; white-space: normal; overflow-wrap: break-word; word-break: break-word;">@deleteMessage</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger rounded-pill btn-wave" @onclick="ConfirmDelete">Delete</button>
+                            <button type="button" class="btn btn-light rounded-pill btn-wave" @onclick="CloseModal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
 
     </Authorized>
     <NotAuthorized>

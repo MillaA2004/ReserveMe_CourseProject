@@ -7,6 +7,8 @@
 	{
 		DbSet<TEntity> Set<TEntity>() where TEntity : class;
 
+		DbSet<ApplicationUser> Users => Set<ApplicationUser>();
+
 		DbSet<Venue> Venues => Set<Venue>();
 
 		DbSet<VenueType> VenueTypes => Set<VenueType>();

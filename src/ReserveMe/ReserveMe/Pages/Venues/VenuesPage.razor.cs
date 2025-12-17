@@ -35,6 +35,11 @@
 		private EditContext venueEditContext = default!;
 		private bool isSubmitting;
 
+		private bool isDeleteModalVisible = false;
+		private int deleteItemId;
+		private string deleteMessage = "";
+		private string title = "";
+
 		protected override async Task OnInitializedAsync()
 		{
 			venueEditContext = new EditContext(venueDto);
@@ -114,6 +119,25 @@
 			return $"data:{file.ContentType};base64,{Convert.ToBase64String(ms.ToArray())}";
 		}
 
+		private void ShowDeleteConfirmation(string title, int venueId, string venueName)
+		{
+			if (title == "Delete Venue")
+			{
+				this.deleteMessage = $"Are you sure you want to delete Venue '{venueName}' ?";
+			}
+
+			this.title = title;
+			this.deleteItemId = venueId;
+			isDeleteModalVisible = true;
+		}
+
+		public async Task DeleteVenue(int venueId)
+		{
+			await _venuesService.DeleteVenue(venueId);
+
+			venues = await _venuesService.GetVenues();
+		}
+
 		private void OnCancelVenue()
 		{
 			ResetVenueForm();
@@ -127,6 +151,22 @@
 			venueDto = new VenueCreateDto();
 			venueEditContext = new EditContext(venueDto);
 			StateHasChanged();
+		}
+
+		private async Task ConfirmDelete()
+		{
+			if (deleteItemId == 0) return;
+
+			if (title == "Delete Venue")
+				await DeleteVenue(deleteItemId);
+
+
+			isDeleteModalVisible = false;
+		}
+
+		private void CloseModal()
+		{
+			isDeleteModalVisible = false;
 		}
 	}
 }

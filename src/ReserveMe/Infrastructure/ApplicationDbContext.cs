@@ -13,6 +13,7 @@
 		{
 		}
 
+		public DbSet<ApplicationUser> Users => Set<ApplicationUser>();
 		public DbSet<Venue> Venues => Set<Venue>();
 		public DbSet<VenueType> VenueTypes => Set<VenueType>();
 		public DbSet<Table> Tables => Set<Table>();
