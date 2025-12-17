@@ -36,6 +36,11 @@
 
 		#endregion
 
-		public static string Reservations = $"{BaseAddressApi}reservations/reserve";
+		#region Reservation
+
+		public static string GetReservations = $"{BaseAddressApi}reservations/getAll";
+
+		#endregion
+
 	}
 }
