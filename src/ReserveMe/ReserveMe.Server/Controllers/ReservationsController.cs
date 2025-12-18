@@ -14,7 +14,7 @@
 		#region READ
 
 		[HttpGet("getAll/{venueId}")]
-		public async Task<ActionResult<List<ReservationDto>>> GetVenues(int venueId)
+		public async Task<ActionResult<List<ReservationDto>>> GetReservations(int venueId)
 		{
 			return await Mediator.Send(new GetReservationsQuery(venueId));
 		}

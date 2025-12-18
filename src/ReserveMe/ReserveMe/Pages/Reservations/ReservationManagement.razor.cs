@@ -1,3 +1,4 @@
+using Common.Enums;
 using Microsoft.AspNetCore.Components;
 using Shared.Dtos.Reservations;
 using Shared.Services.Reservations;
@@ -7,12 +8,6 @@ namespace ReserveMe.Pages.Owner;
 public partial class ReservationManagement : ComponentBase
 {
 	[Inject] private IReservationsService _reservationsService { get; set; } = null!;
-
-	private List<ReservationDto> reservations = new List<ReservationDto>();
-
-
-
-
 
 	// Filters
 	private string _searchTerm = string.Empty;
@@ -55,15 +50,18 @@ public partial class ReservationManagement : ComponentBase
 	private int _totalPages => (int)Math.Ceiling((double)_filteredReservations.Count() / _pageSize);
 
 	// Data
-	private List<ReservationViewModel> _reservations = new();
-	private ReservationViewModel? _selectedReservation;
+	private List<ReservationDto> _reservations = new();
+	private ReservationDto? _selectedReservation;
 	private bool _showDetailsDialog = false;
 
 	// Filtered and paged data
-	private IEnumerable<ReservationViewModel> _filteredReservations => FilterReservations();
-	private IEnumerable<ReservationViewModel> _pagedReservations => _filteredReservations
+	private IEnumerable<ReservationDto> _filteredReservations => FilterReservations();
+	private IEnumerable<ReservationDto> _pagedReservations => _filteredReservations
 		.Skip((_currentPage - 1) * _pageSize)
 		.Take(_pageSize);
+
+	private static DateTime GetReservationDate(ReservationDto r) => (r.ReservationTime ?? DateTime.MinValue).Date;
+	private static TimeSpan GetReservationTimeOfDay(ReservationDto r) => (r.ReservationTime ?? DateTime.MinValue).TimeOfDay;
 
 	private bool HasActiveFilters =>
 		!string.IsNullOrEmpty(_searchTerm) ||
@@ -76,25 +74,12 @@ public partial class ReservationManagement : ComponentBase
 
 	protected override async Task OnInitializedAsync()
 	{
-		int venueId = 0;
+		int venueId = 1;
 
-		reservations = await _reservationsService.GetReservations(venueId);
-		await LoadReservations();
+		_reservations = await _reservationsService.GetReservations(venueId);
 	}
 
-	private async Task LoadReservations()
-	{
-		_isLoading = true;
-		StateHasChanged();
-
-		await Task.Delay(500);
-		_reservations = GetMockReservations();
-
-		_isLoading = false;
-		StateHasChanged();
-	}
-
-	private IEnumerable<ReservationViewModel> FilterReservations()
+	private IEnumerable<ReservationDto> FilterReservations()
 	{
 		var query = _reservations.AsEnumerable();
 
@@ -102,21 +87,21 @@ public partial class ReservationManagement : ComponentBase
 		{
 			var term = _searchTerm.ToLower();
 			query = query.Where(r =>
-				r.CustomerName.ToLower().Contains(term) ||
-				r.PhoneNumber.Contains(term));
+				r.ContactName.ToLower().Contains(term) ||
+				r.ContactPhone.Contains(term));
 		}
 
 		if (_dateFrom.HasValue)
-			query = query.Where(r => r.ReservationDate >= _dateFrom.Value.Date);
+			query = query.Where(r => GetReservationDate(r) >= _dateFrom.Value.Date);
 
 		if (_dateTo.HasValue)
-			query = query.Where(r => r.ReservationDate <= _dateTo.Value.Date);
+			query = query.Where(r => GetReservationDate(r) <= _dateTo.Value.Date);
 
 		if (_timeFrom.HasValue)
-			query = query.Where(r => r.ReservationTime >= _timeFrom.Value);
+			query = query.Where(r => GetReservationTimeOfDay(r) >= _timeFrom.Value);
 
 		if (_timeTo.HasValue)
-			query = query.Where(r => r.ReservationTime <= _timeTo.Value);
+			query = query.Where(r => GetReservationTimeOfDay(r) <= _timeTo.Value);
 
 		if (_statusFilter.HasValue)
 			query = query.Where(r => r.Status == _statusFilter.Value);
@@ -124,7 +109,9 @@ public partial class ReservationManagement : ComponentBase
 		if (_tableNumberFilter.HasValue)
 			query = query.Where(r => r.TableNumber == _tableNumberFilter.Value);
 
-		return query.OrderBy(r => r.ReservationDate).ThenBy(r => r.ReservationTime);
+		return query
+			.OrderBy(GetReservationDate)
+			.ThenBy(GetReservationTimeOfDay);
 	}
 
 	private void ShowToday()
@@ -150,13 +137,13 @@ public partial class ReservationManagement : ComponentBase
 		StateHasChanged();
 	}
 
-	private void ChangeStatus(ReservationViewModel reservation, ReservationStatus newStatus)
+	private void ChangeStatus(ReservationDto reservation, ReservationStatus newStatus)
 	{
 		reservation.Status = newStatus;
 		StateHasChanged();
 	}
 
-	private void ViewDetails(ReservationViewModel reservation)
+	private void ViewDetails(ReservationDto reservation)
 	{
 		_selectedReservation = reservation;
 		_showDetailsDialog = true;
@@ -217,43 +204,4 @@ public partial class ReservationManagement : ComponentBase
 		ReservationStatus.Completed => "Completed",
 		_ => "Unknown"
 	};
-
-	// Mock Data
-	private static List<ReservationViewModel> GetMockReservations() => new()
-	{
-		new() { Id = Guid.NewGuid(), CustomerName = "Ivan Petrov", PhoneNumber = "+359 888 123 456", ReservationDate = DateTime.Today, ReservationTime = new TimeSpan(19, 0, 0), GuestCount = 4, TableNumber = 5, Status = ReservationStatus.Pending, Notes = "Birthday celebration - please prepare a cake" },
-		new() { Id = Guid.NewGuid(), CustomerName = "Maria Georgieva", PhoneNumber = "+359 899 234 567", ReservationDate = DateTime.Today, ReservationTime = new TimeSpan(20, 30, 0), GuestCount = 2, TableNumber = 3, Status = ReservationStatus.Approved, Notes = "" },
-		new() { Id = Guid.NewGuid(), CustomerName = "Georgi Dimitrov", PhoneNumber = "+359 877 345 678", ReservationDate = DateTime.Today, ReservationTime = new TimeSpan(18, 0, 0), GuestCount = 6, TableNumber = 8, Status = ReservationStatus.InProgress, Notes = "Nut allergy" },
-		new() { Id = Guid.NewGuid(), CustomerName = "Elena Stoyanova", PhoneNumber = "+359 888 456 789", ReservationDate = DateTime.Today, ReservationTime = new TimeSpan(21, 0, 0), GuestCount = 3, TableNumber = 2, Status = ReservationStatus.Completed, Notes = "" },
-		new() { Id = Guid.NewGuid(), CustomerName = "Petar Nikolov", PhoneNumber = "+359 899 567 890", ReservationDate = DateTime.Today.AddDays(-1), ReservationTime = new TimeSpan(19, 30, 0), GuestCount = 5, TableNumber = 6, Status = ReservationStatus.Declined, Notes = "Customer did not show up" },
-		new() { Id = Guid.NewGuid(), CustomerName = "Anna Ivanova", PhoneNumber = "+359 877 678 901", ReservationDate = DateTime.Today.AddDays(1), ReservationTime = new TimeSpan(12, 30, 0), GuestCount = 2, TableNumber = 1, Status = ReservationStatus.Pending, Notes = "Business lunch" },
-		new() { Id = Guid.NewGuid(), CustomerName = "Stefan Todorov", PhoneNumber = "+359 888 789 012", ReservationDate = DateTime.Today, ReservationTime = new TimeSpan(13, 0, 0), GuestCount = 8, TableNumber = 10, Status = ReservationStatus.Approved, Notes = "Corporate event" },
-		new() { Id = Guid.NewGuid(), CustomerName = "Viktoria Petrova", PhoneNumber = "+359 899 890 123", ReservationDate = DateTime.Today, ReservationTime = new TimeSpan(20, 0, 0), GuestCount = 4, TableNumber = 4, Status = ReservationStatus.Pending, Notes = "" },
-		new() { Id = Guid.NewGuid(), CustomerName = "Nikolay Hristov", PhoneNumber = "+359 888 111 222", ReservationDate = DateTime.Today.AddDays(2), ReservationTime = new TimeSpan(19, 0, 0), GuestCount = 6, TableNumber = 7, Status = ReservationStatus.Approved, Notes = "Anniversary" },
-		new() { Id = Guid.NewGuid(), CustomerName = "Desislava Koleva", PhoneNumber = "+359 877 333 444", ReservationDate = DateTime.Today.AddDays(1), ReservationTime = new TimeSpan(20, 0, 0), GuestCount = 4, TableNumber = 9, Status = ReservationStatus.Pending, Notes = "" },
-		new() { Id = Guid.NewGuid(), CustomerName = "Krasimir Metodiev", PhoneNumber = "+359 899 555 666", ReservationDate = DateTime.Today, ReservationTime = new TimeSpan(12, 0, 0), GuestCount = 2, TableNumber = 1, Status = ReservationStatus.Completed, Notes = "Business meeting" },
-		new() { Id = Guid.NewGuid(), CustomerName = "Silvia Atanasova", PhoneNumber = "+359 888 777 888", ReservationDate = DateTime.Today.AddDays(-2), ReservationTime = new TimeSpan(19, 30, 0), GuestCount = 5, TableNumber = 6, Status = ReservationStatus.Completed, Notes = "" },
-	};
-}
-
-public class ReservationViewModel
-{
-	public Guid Id { get; set; }
-	public string CustomerName { get; set; } = string.Empty;
-	public string PhoneNumber { get; set; } = string.Empty;
-	public DateTime ReservationDate { get; set; }
-	public TimeSpan ReservationTime { get; set; }
-	public int GuestCount { get; set; }
-	public int TableNumber { get; set; }
-	public ReservationStatus Status { get; set; }
-	public string Notes { get; set; } = string.Empty;
-}
-
-public enum ReservationStatus
-{
-	Pending,
-	Approved,
-	InProgress,
-	Declined,
-	Completed
 }
