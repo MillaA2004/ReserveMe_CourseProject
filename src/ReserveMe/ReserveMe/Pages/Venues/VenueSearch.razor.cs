@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Shared.Dtos.Venues;
 using Shared.Dtos.VenueTypes;
 using Shared.Services.Venues;
@@ -11,6 +12,7 @@ public partial class VenueSearch : ComponentBase
 {
 	[Inject] private IVenueTypesService _venueTypesService { get; set; } = null!;
 	[Inject] private IVenuesService _venuesService { get; set; } = null!;
+	[Inject] private IJSRuntime jsRuntime { get; set; }
 
 	// Location
 	private string _currentLocation = "Sofia, Bulgaria";
@@ -63,6 +65,43 @@ public partial class VenueSearch : ComponentBase
 		}
 	}
 
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (!firstRender) return;
+
+		Console.WriteLine("Before catch");
+		try
+		{
+			Console.WriteLine("Before Location call");
+			var pos = await jsRuntime.InvokeAsync<GeoPos>("reserveMeGeo.getCurrentPosition", new
+			{
+				enableHighAccuracy = true,
+				timeout = 10000,
+				maximumAge = 60000
+			});
+			Console.WriteLine("after Location call: " + pos.lat + " " + pos.lon);
+			_userLatitude = pos.lat;
+			_userLongitude = pos.lon;
+			_currentLocation = "Near you";
+
+			ResetPaging();
+			FilterAndPaginate();
+		}
+		catch (JSException ex)
+		{
+			Console.WriteLine("error in catch: " + ex.Message);
+			_errorMessage = "We couldn't access your location. Showing results for the default area.";
+			StateHasChanged();
+		}
+	}
+
+	private sealed class GeoPos
+	{
+		public double lat { get; set; }
+		public double lon { get; set; }
+		public double accuracy { get; set; }
+	}
 
 	private void OnSearchChanged()
 	{
@@ -159,6 +198,12 @@ public partial class VenueSearch : ComponentBase
 		_hasMore = true;
 	}
 
+	private string FormatDistance(VenueSearchDto v)
+	{
+		var d = HaversineKm(_userLatitude, _userLongitude, v.Latitude, v.Longitude);
+		return $"{d:0.0} km";
+	}
+
 	/// <summary>
 	/// Applies search, type, radius, sorting and then paginates.
 	/// </summary>
@@ -184,16 +229,11 @@ public partial class VenueSearch : ComponentBase
 		}
 
 		// 3) Radius filter
-		// query = query.Where(v =>
-		// {
-		//     if (v.Latitude.HasValue && v.Longitude.HasValue)
-		//     {
-		//         var d = HaversineKm(_userLatitude, _userLongitude, v.Latitude.Value, v.Longitude.Value);
-		//         // Optional: persist computed distance into a custom property if you have one.
-		//         return d <= _selectedRadius;
-		//     }
-		//     return false;
-		// });
+		query = query.Where(v =>
+		{
+			var d = HaversineKm(_userLatitude, _userLongitude, v.Latitude, v.Longitude);
+			return d <= _selectedRadius;
+		});
 
 		// 4) Sort
 		query = _sortBy switch
