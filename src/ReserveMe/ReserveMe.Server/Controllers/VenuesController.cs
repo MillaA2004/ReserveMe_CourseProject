@@ -25,6 +25,13 @@
 			return await Mediator.Send(new GetVenuesForClientQuery());
 		}
 
+		[HttpGet("getVenueById/{venueId}")]
+		[AllowAnonymous]
+		public async Task<ActionResult<VenueSearchDto>> GetVenuesForClient(int venueId)
+		{
+			return await Mediator.Send(new GetVenueByIdQuery(venueId));
+		}
+
 		#endregion
 
 		#region CREATE

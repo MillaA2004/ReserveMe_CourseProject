@@ -24,8 +24,7 @@ public partial class CreateReservation : ComponentBase
 	protected override async Task OnInitializedAsync()
 	{
 		reservationCreateContext = new EditContext(reservationDto);
-		var a = await _venuesService.GetVenuesForClient();
-		currVenue = a.FirstOrDefault(x => x.Id == VenueId) ?? new();
+		currVenue = await _venuesService.GetVenueById(VenueId);
 
 		await base.OnInitializedAsync();
 	}
@@ -35,19 +34,19 @@ public partial class CreateReservation : ComponentBase
 		ErrorMessage = null;
 		SuccessMessage = null;
 
-		if (reservationDto.GuestsCount > 20)
+		try
 		{
-			ErrorMessage = "Mock rule: maximum 20 guests.";
-			return;
+
+			SuccessMessage =
+				$"Reservation created (mock). Guest: {reservationDto.ContactName}, " +
+				$"Guests: {reservationDto.GuestsCount}, " +
+				//$"Area: {AreaLabel(Model.Area)}, " +
+				$"Date: {reservationDto.ReservationTime:MM/dd/yyyy HH:mm}.";
 		}
-
-		await Task.Delay(200);
-
-		SuccessMessage =
-			$"Reservation created (mock). Guest: {reservationDto.ContactName}, " +
-			$"Guests: {reservationDto.GuestsCount}, " +
-			//$"Area: {AreaLabel(Model.Area)}, " +
-			$"Date: {reservationDto.ReservationTime:MM/dd/yyyy HH:mm}.";
+		catch (Exception ex)
+		{
+			ErrorMessage = ex.Message;
+		}
 	}
 
 	protected void ToggleFav() => IsFavorite = !IsFavorite;

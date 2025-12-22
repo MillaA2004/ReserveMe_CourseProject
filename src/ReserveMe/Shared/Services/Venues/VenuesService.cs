@@ -31,6 +31,25 @@
 			}
 		}
 
+		public async Task<VenueSearchDto> GetVenueById(int venueId)
+		{
+			try
+			{
+				object[] uriParams = new object[]
+				{
+					venueId
+				};
+
+				var result = await _provider.GetAsync<VenueSearchDto>(Endpoints.GetVenueById + "/{0}", uriParams, null, null);
+
+				return result;
+			}
+			catch (Exception ex)
+			{
+				return new VenueSearchDto();
+			}
+		}
+
 		public async Task<List<VenueSearchDto>> GetVenuesForClient()
 		{
 			try
