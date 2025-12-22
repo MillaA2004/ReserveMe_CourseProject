@@ -24,6 +24,8 @@
 
 		public DateTime? ReservationTime { get; set; }
 
+		public DateTime? CreatedAt { get; set; }
+
 		public ReservationStatus Status { get; set; }
 	}
 }
