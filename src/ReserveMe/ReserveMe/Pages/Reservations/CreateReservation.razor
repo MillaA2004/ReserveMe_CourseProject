@@ -33,8 +33,7 @@
                     <div class="form-group">
                         <label>Contact person</label>
                         <InputText id="contactName"
-                                   @bind-Value="reservationDto.ContactName"
-                                   @bind-Value:event="oninput" />
+                                   @bind-Value="reservationDto.ContactName"/>
                         <span class="text-danger"><ValidationMessage For="@(() => reservationDto.ContactName)" /></span>
                     </div>
 
@@ -42,7 +41,6 @@
                         <label>Phone</label>
                         <InputText id="phone"
                                    @bind-Value="reservationDto.ContactPhone"
-                                   @bind-Value:event="oninput"
                                    placeholder="+1 555 123 456" />
                         <span class="text-danger"><ValidationMessage For="@(() => reservationDto.ContactPhone)" /></span>
                     </div>
@@ -53,18 +51,17 @@
                         <label>Email</label>
                         <InputText id="email"
                                    @bind-Value="reservationDto.ContactEmail"
-                                   @bind-Value:event="oninput"
                                    placeholder="john@example.com" />
                         <span class="text-danger"><ValidationMessage For="@(() => reservationDto.ContactEmail)" /></span>
                     </div>
 
                     <div class="form-group">
                         <label>Date &amp; time</label>
-                        <input id="dateTime"
-                               type="datetime-local"
-                               class="form-control"
-                               @bind="reservationDto.ReservationTime"
-                               @bind:event="oninput" />
+                        <InputDate id="dateTime"
+                                   class="form-control"
+                                   TValue="DateTime?"
+                                   @bind-Value="reservationDto.ReservationTime"
+                                   @bind-Value:format="yyyy-MM-ddTHH:mm" />
                         <span class="text-danger"><ValidationMessage For="@(() => reservationDto.ReservationTime)" /></span>
                     </div>
                 </div>
@@ -74,7 +71,6 @@
                         <label>Guests</label>
                         <InputNumber id="guests"
                                      @bind-Value="reservationDto.GuestsCount"
-                                     @bind-Value:event="oninput"
                                      Min="1" Max="20" />
                         <p class="helper-text">Mock: max 20 guests</p>
                         <span class="text-danger"><ValidationMessage For="@(() => reservationDto.GuestsCount)" /></span>

@@ -50,6 +50,8 @@
 
 		public static string GetReservations = $"{BaseAddressApi}reservations/getAll";
 
+		public static string CreateReservation = $"{BaseAddressApi}reservations/create";
+
 		public static string UpdateReservationStaus = $"{BaseAddressApi}reservations/updateStaus";
 
 		#endregion

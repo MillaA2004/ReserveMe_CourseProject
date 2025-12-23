@@ -4,8 +4,10 @@
 	using System.Threading.Tasks;
 	using Common.Enums;
 	using Shared.Dtos.Reservations;
+	using Shared.Dtos.Venues;
 	using Shared.Providers;
 	using Shared.Requests.Reservations;
+	using Shared.Requests.Venues;
 
 	public class ReservationsService : IReservationsService
 	{
@@ -34,6 +36,39 @@
 			catch (Exception ex)
 			{
 				return new List<ReservationDto>();
+			}
+		}
+
+		#endregion
+
+		#region POST
+
+		public async Task CreateReservationAsync(ReservationDto reservationDto)
+		{
+			try
+			{
+				//TODO: Automapper
+				//var model = _mapper.Map<SaveReservationRequest>(reservationDto);
+				var model = new SaveReservationRequest()
+				{
+					UserId = reservationDto.UserId,
+					VenueId = reservationDto.VenueId,
+					TableNumber = reservationDto.TableNumber,
+					GuestsCount = reservationDto.GuestsCount,
+					ContactName = reservationDto.ContactName,
+					ContactPhone = reservationDto.ContactPhone,
+					ContactEmail = reservationDto.ContactEmail,
+					ReservationTime = reservationDto.ReservationTime,
+					//CreatedAt = reservationDto.CreatedAt,
+					Status = (int)reservationDto.Status
+				};
+
+				await _provider.PostAsync<SaveReservationRequest, object>(Endpoints.CreateReservation, model, null);
+			}
+			catch (Exception ex)
+			{
+				//TODO: Log errors
+				//this._logger.LogError(ex.Message);
 			}
 		}
 

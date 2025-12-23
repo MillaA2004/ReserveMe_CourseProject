@@ -146,5 +146,21 @@
 
 			return string.Empty;
 		}
+
+		public async Task<string?> GetUserId()
+		{
+			var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+			var user = authState.User;
+
+			var userName = await GetUserName(user);
+			if (string.IsNullOrWhiteSpace(userName))
+			{
+				return string.Empty;
+			}
+
+			var currUser = await _userService.GetByNameAsync(userName);
+
+			return currUser.Id;
+		}
 	}
 }

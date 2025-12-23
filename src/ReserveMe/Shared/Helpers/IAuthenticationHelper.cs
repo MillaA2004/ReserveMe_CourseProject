@@ -14,5 +14,7 @@
 		Task<int> GetUserMenuId();
 
 		Task<string> GetUserName(ClaimsPrincipal user);
+
+		Task<string?> GetUserId();
 	}
 }
