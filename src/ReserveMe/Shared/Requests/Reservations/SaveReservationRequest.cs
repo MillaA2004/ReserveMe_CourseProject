@@ -1,11 +1,10 @@
-﻿namespace Shared.Dtos.Reservations
+﻿namespace Shared.Requests.Reservations
 {
+	using System;
 	using Common.Enums;
 
-	public class ReservationDto
+	public class SaveReservationRequest
 	{
-		public int Id { get; set; }
-
 		public string? UserId { get; set; }
 
 		public int VenueId { get; set; }
@@ -26,6 +25,6 @@
 
 		//public DateTime? CreatedAt { get; set; }
 
-		public ReservationStatus Status { get; set; }
+		public int Status { get; set; }
 	}
 }

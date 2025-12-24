@@ -6,6 +6,8 @@
 	{
 		Task<List<VenueAdminDto>> GetVenues();
 
+		Task<VenueSearchDto> GetVenueById(int venueId);
+
 		Task<List<VenueSearchDto>> GetVenuesForClient();
 
 		Task CreateVenueAsync(VenueCreateDto venueDto);

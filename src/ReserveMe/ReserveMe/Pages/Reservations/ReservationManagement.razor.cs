@@ -4,7 +4,7 @@ using Shared.Dtos.Reservations;
 using Shared.Helpers;
 using Shared.Services.Reservations;
 
-namespace ReserveMe.Pages.Owner;
+namespace ReserveMe.Pages.Reservations;
 
 public partial class ReservationManagement : ComponentBase
 {

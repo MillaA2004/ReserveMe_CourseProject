@@ -24,6 +24,8 @@
 
 		public static string GetVenues = $"{BaseAddressApi}venues/getAll";
 
+		public static string GetVenueById = $"{BaseAddressApi}venues/getVenueById";
+
 		public static string GetVenuesForClient = $"{BaseAddressApi}venues/getVenuesForClient";
 
 		public static string CreateVenue = $"{BaseAddressApi}venues/create";
@@ -47,6 +49,8 @@
 		#region Reservation
 
 		public static string GetReservations = $"{BaseAddressApi}reservations/getAll";
+
+		public static string CreateReservation = $"{BaseAddressApi}reservations/create";
 
 		public static string UpdateReservationStaus = $"{BaseAddressApi}reservations/updateStaus";
 
