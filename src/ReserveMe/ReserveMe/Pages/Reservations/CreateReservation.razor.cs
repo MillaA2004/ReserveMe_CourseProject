@@ -10,6 +10,8 @@ namespace ReserveMe.Pages.Reservations;
 
 public partial class CreateReservation : ComponentBase
 {
+	//TODO: Get and visualize available tables (params - VenueId, DateTime)
+
 	[Parameter] public int VenueId { get; set; }
 
 	[Inject] private IVenuesService _venuesService { get; set; } = null!;
