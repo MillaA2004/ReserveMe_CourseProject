@@ -15,6 +15,7 @@
 		protected override async Task OnInitializedAsync()
 		{
 			this.venue = await this._venuesService.GetVenueById(VenueId);
+			Console.WriteLine(this.venue.TotalReservations);
 		}
 	}
 }

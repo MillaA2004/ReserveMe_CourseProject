@@ -15,9 +15,7 @@
                     }
                     else
                     {
-                        <div class="venue-logo placeholder" title="No Logo">
-                            <span class="placeholder-text">@GetInitials(venue.Name)</span>
-                        </div>
+                        <img src="@($"../assets/images/emptyImg.jpg")" alt="Venue Logo" class="venue-logo" />
                     }
 
                     <div class="venue-title-block">
@@ -50,10 +48,7 @@
                 }
                 else
                 {
-                    <div class="cover-img placeholder" title="No Image">
-                        <div class="placeholder-pattern"></div>
-                        <span class="placeholder-label">No image uploaded</span>
-                    </div>
+                    <img src="@($"../assets/images/emptyImg.jpg")" alt="Venue Image" class="cover-img" />
                 }
             </div>
         </section>

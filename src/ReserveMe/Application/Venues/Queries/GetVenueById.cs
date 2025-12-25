@@ -23,6 +23,7 @@
 			CancellationToken cancellationToken)
 		{
 			var venue = await _context.Venues
+				.Include(v=> v.Reservations)
 				.Include(v => v.VenueType)
 				.AsNoTracking()
 				.FirstOrDefaultAsync(v => v.Id == request.VenueId);
