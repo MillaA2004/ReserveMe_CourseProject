@@ -95,8 +95,6 @@
                     </div>
                 </article>
 
-
-
                 @if (recentReviews?.Count > 0)
                 {
                     <div class="card">
@@ -145,7 +143,8 @@
             </section>
 
             <section class="right-col">
-                <div class="card">
+                @* //TODO: Get all available tables for selected date *@
+                @*     <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Available Tables</h3>
                     </div>
@@ -181,7 +180,9 @@
                     </ul>
 
                     <button class="btn btn-success w-100 mt-8">Make a Reservation</button>
-                </div>
+                </div> *@
+
+                <a href="/makeReservation/@VenueId" class="btn btn-success">Make a Reservation</a>
 
                 @if (UserId != null)
                 {
