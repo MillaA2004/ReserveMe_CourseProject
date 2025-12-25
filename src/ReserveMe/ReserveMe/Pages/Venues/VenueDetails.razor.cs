@@ -20,7 +20,6 @@
 
 		private VenueSearchDto venue { get; set; }
 
-
 		private ReviewDto reviewDto = new() { Rating = 0 };
 		private EditContext reviewEditContext = default!;
 
@@ -42,6 +41,12 @@
 		{
 			if (venue is null) return;
 
+			if (reviewDto.Rating == 0)
+			{
+				submitError = "Please rate the venue!";
+				return;
+			}
+
 			submitting = true;
 			submitError = null;
 			submitSuccess = null;
@@ -53,7 +58,7 @@
 				reviewDto.CreatedAt = DateTime.UtcNow;
 				await _reviewsService.CreateReviewAsync(reviewDto);
 
-
+				this.venue = await this._venuesService.GetVenueById(VenueId);
 				reviewDto = new ReviewDto { Rating = 0, Comment = string.Empty };
 				ResetReviewForm();
 				submitSuccess = "Thanks for your review!";
