@@ -5,5 +5,7 @@
 	public interface IReviewsService
 	{
 		Task CreateReviewAsync(ReviewDto reviewDto);
+
+		Task<List<ReviewDto>> GetReviewsByVenueId(int venueId);
 	}
 }

@@ -60,6 +60,8 @@
 
 		#region Reviews
 
+		public static string GetReviewsByVenueId = $"{BaseAddressApi}reviews/getReviewsByVenueId";
+		
 		public static string CreateReview = $"{BaseAddressApi}reviews/create";
 
 		#endregion

@@ -13,6 +13,29 @@
 			this._provider = apiProvider;
 		}
 
+		#region GET
+
+		public async Task<List<ReviewDto>> GetReviewsByVenueId(int venueId)
+		{
+			try
+			{
+				object[] uriParams = new object[]
+				{
+					venueId
+				};
+
+				var result = await _provider.GetAsync<List<ReviewDto>>(Endpoints.GetReviewsByVenueId + "/{0}", uriParams, null, null);
+
+				return result;
+			}
+			catch (Exception ex)
+			{
+				return new List<ReviewDto>();
+			}
+		}
+
+		#endregion
+
 		#region POST
 
 		public async Task CreateReviewAsync(ReviewDto reviewDto)

@@ -95,7 +95,7 @@
                     </div>
                 </article>
 
-                <article class="card">
+                @*   <article class="card">
                     <h3 class="card-title">Contacts</h3>
                     <div class="kv-row">
                         <div class="kv">
@@ -107,7 +107,7 @@
                             <span class="v muted">Not available</span>
                         </div>
                     </div>
-                </article>
+                </article> *@
             </section>
 
             <section class="right-col">
@@ -197,8 +197,8 @@
                     </div>
                 }
 
-                <!-- Optional: latest reviews preview -->
-                @*   @if (recentReviews?.Count > 0)
+
+                @if (recentReviews?.Count > 0)
                 {
                     <div class="card">
                         <h3 class="card-title">Latest Reviews</h3>
@@ -206,14 +206,14 @@
                             @foreach (var r in recentReviews)
                             {
                                 <li class="table-item">
-                                    <span class="table-name">@($"{new string('★', r.Rating)}")</span>
+                                    <span class="table-name">@($"{new string('★', r.Rating ?? 0)}")</span>
                                     <span>@r.Comment</span>
-                                    <span class="muted">— @r.AuthorName • @r.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</span>
+                                    <span class="muted">— @r.ReviewerName • @r.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</span>
                                 </li>
                             }
                         </ul>
                     </div>
-                } *@
+                }
             </section>
         </main>
     </div>

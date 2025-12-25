@@ -19,6 +19,7 @@
 		public string? UserId { get; set; }
 
 		private VenueSearchDto venue { get; set; }
+		private List<ReviewDto> recentReviews { get; set; }
 
 		private ReviewDto reviewDto = new() { Rating = 0 };
 		private EditContext reviewEditContext = default!;
@@ -35,6 +36,7 @@
 
 			reviewEditContext = new EditContext(reviewDto);
 			this.venue = await this._venuesService.GetVenueById(VenueId);
+			this.recentReviews = await this._reviewsService.GetReviewsByVenueId(VenueId);
 		}
 
 		private async Task SubmitReviewAsync()
@@ -59,6 +61,8 @@
 				await _reviewsService.CreateReviewAsync(reviewDto);
 
 				this.venue = await this._venuesService.GetVenueById(VenueId);
+				this.recentReviews = await this._reviewsService.GetReviewsByVenueId(VenueId);
+
 				reviewDto = new ReviewDto { Rating = 0, Comment = string.Empty };
 				ResetReviewForm();
 				submitSuccess = "Thanks for your review!";
