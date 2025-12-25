@@ -79,6 +79,20 @@
 			}
 		}
 
+		private RenderFragment RenderStars(int rating) => builder =>
+		{
+			var count = Math.Clamp(rating, 0, 5);
+			var seq = 0;
+			for (int i = 1; i <= 5; i++)
+			{
+				var cls = i <= count ? "star-inline active" : "star-inline";
+				builder.OpenElement(seq++, "span");
+				builder.AddAttribute(seq++, "class", cls);
+				builder.AddContent(seq++, "★");
+				builder.CloseElement();
+			}
+		};
+
 		private void SetRating(int value)
 		{
 			var clamped = Math.Clamp(value, 1, 5);
