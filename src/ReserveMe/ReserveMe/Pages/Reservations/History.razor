@@ -1,10 +1,6 @@
 ﻿@page "/history"
 
 <div class="history-page">
-    <div class="page-logo">
-        <img src="images/ReserveMe_logo.png" alt="Logo" />
-    </div>
-
     <div class="page-card">
         <header class="page-header">
             <h1>История на резервациите</h1>
@@ -32,17 +28,32 @@
 
                         <div class="item__main">
                             <div class="item__logo">
-                                <div class="logo-fallback">@r.LogoFallback</div>
+                                @if (!string.IsNullOrWhiteSpace(r.VenueLogo))
+                                {
+                                    <img class="logo-img"
+                                         src="@r.VenueLogo"
+                                         alt="venueLogo"
+                                         loading="lazy" />
+                                }
+                                else
+                                {
+
+                                    <img class="logo-img"
+                                         src="/assets/images/emptyImg.jpg"
+                                         alt="venueLogo"
+                                         loading="lazy" />
+                                }
                             </div>
 
                             <div class="item__content">
                                 <div class="item__header">
-                                    <h2 class="restaurant-name">@r.RestaurantName</h2>
-                                    <span class="reservation-number">#@r.Number</span>
+                                    <h2 class="restaurant-name">@r.VenueName</h2>
+                                    <span class="reservation-number">#@r.GuestsCount</span>
                                 </div>
 
                                 <div class="item__meta">
-                                    <span class="reservation-date">Дата: @r.Date.ToString("dd.MM.yyyy, HH:mm")</span>
+                                    <span class="reservation-date">Дата: @(r.ReservationTime)</span>
+                                    @* <span class="reservation-date">Дата: @(r.ReservationTime.ToString("dd.MM.yyyy, HH:mm"))</span> *@
 
                                     <span class="meta-chip meta-chip--guests">
                                         <span class="chip-label">Гости:</span>
@@ -59,7 +70,7 @@
 
                         <div class="item__address">
                             <span class="address-label">Адрес:</span>
-                            <span class="address-text">@r.Address</span>
+                            <span class="address-text">@(r.VenueLatitude), @(r.VenueLongitude)</span>
                         </div>
                     </a>
                 }
@@ -214,6 +225,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+        }
+
+        .history-page .logo-img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover; /* crops to circle nicely */
+            border: 1px solid var(--border);
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(15,23,42,0.06);
+            display: block;
         }
 
         .history-page .logo-fallback {

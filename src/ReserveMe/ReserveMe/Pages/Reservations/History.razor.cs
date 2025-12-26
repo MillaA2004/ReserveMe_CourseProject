@@ -1,79 +1,29 @@
 ﻿using Common.Enums;
 using Microsoft.AspNetCore.Components;
+using Shared.Dtos.Reservations;
+using Shared.Helpers;
+using Shared.Services.Reservations;
 
 namespace ReserveMe.Pages.Reservations
 {
 	public partial class History : ComponentBase
 	{
-		protected List<Reservation> Reservations { get; set; } = new();
+		[Inject] private IReservationsService _reservationsService { get; set; } = null!;
+		[Inject] private IAuthenticationHelper _authHelper { get; set; } = null!;
+		[Inject] public NavigationManager navManager { get; set; } = default!;
 
-		[Inject] protected NavigationManager NavigationManager { get; set; } = default!;
+		public List<ReservationForClientDto> Reservations { get; set; } = new();
 
-		protected override void OnInitialized()
+		public string? UserId { get; set; }
+
+		protected override async Task OnInitializedAsync()
 		{
-			Reservations = new List<Reservation>
-			{
-				new Reservation
-				{
-					Id = 1,
-					RestaurantName = "Pizza",
-					Number = "#11111",
-					Date = new DateTime(2025, 11, 20, 19, 30, 0),
-			Status =        ReservationStatus.Pending,
-					Address = "ул. „Пицария“ 10, София",
-					LogoFallback = "P",
-					GuestsCount = 4,
-					VenueType = "Bistro"
-				},
-				new Reservation
-				{
-					Id = 2,
-					RestaurantName = "Garden",
-					Number = "#11111",
-					Date = new DateTime(2025, 11, 20, 19, 30, 0),
-Status =                    ReservationStatus.InProgress,
-					Address = "ул. „Пицария“ 10, София",
-					LogoFallback = "G",
-					GuestsCount = 1,
-					VenueType = "Bar"
-				},
-				new Reservation
-				{
-					Id = 3,
-					RestaurantName = "Bistro",
-					Number = "#11111",
-					Date = new DateTime(2025, 11, 20, 19, 30, 0),
-			Status =        ReservationStatus.Approved,
-					Address = "ул. „Пицария“ 10, София",
-					LogoFallback = "B",
-					GuestsCount = 8,
-					VenueType = "Restaurant"
-				},
-				new Reservation
-				{
-					Id = 3,
-					RestaurantName = "Bistro",
-					Number = "#11111",
-					Date = new DateTime(2025, 11, 20, 19, 30, 0),
-				Status =    ReservationStatus.Declined,
-					Address = "ул. „Пицария“ 10, София",
-					LogoFallback = "B",
-					GuestsCount = 8,
-					VenueType = "Restaurant"
-				},
-				new Reservation
-				{
-					Id = 3,
-					RestaurantName = "Bistro",
-					Number = "#11111",
-					Date = new DateTime(2025, 11, 20, 19, 30, 0),
-				Status =    ReservationStatus.Completed,
-					Address = "ул. „Пицария“ 10, София",
-					LogoFallback = "B",
-					GuestsCount = 8,
-					VenueType = "Restaurant"
-				}
-			};
+			UserId = await _authHelper.GetUserId();
+
+			if (string.IsNullOrEmpty(UserId))
+				navManager?.NavigateTo("/login", forceLoad: true);
+
+			Reservations = await _reservationsService.GetReservationsByClientId(UserId!);
 		}
 
 		private string GetStatusClass(ReservationStatus status) => status switch
@@ -99,23 +49,7 @@ Status =                    ReservationStatus.InProgress,
 		protected void OpenReservation(int id)
 		{
 			Console.WriteLine($"Open reservation {id}");
-			NavigationManager.NavigateTo($"/reservation/{id}");
+			navManager.NavigateTo($"/reservation/{id}");
 		}
 	}
-
-	public class Reservation
-	{
-		public int Id { get; set; }
-		public string RestaurantName { get; set; } = string.Empty;
-		public string Number { get; set; } = string.Empty;
-		public DateTime Date { get; set; }
-		public ReservationStatus Status { get; set; }
-		public string Address { get; set; } = string.Empty;
-		public string LogoFallback { get; set; } = string.Empty;
-
-		public string VenueType { get; set; }
-		public int GuestsCount { get; set; }
-
-	}
-
 }
