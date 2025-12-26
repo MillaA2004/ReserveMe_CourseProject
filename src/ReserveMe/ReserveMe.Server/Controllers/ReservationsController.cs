@@ -30,6 +30,7 @@
 		[HttpPost("create")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesDefaultResponseType]
+		[AllowAnonymous]
 		public async Task<IActionResult> CreateReservation(SaveReservationRequest reservation)
 		{
 			await Mediator.Send(new CreateReservationCommand(reservation));

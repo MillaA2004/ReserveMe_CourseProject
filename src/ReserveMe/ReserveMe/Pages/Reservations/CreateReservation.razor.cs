@@ -37,7 +37,7 @@ public partial class CreateReservation : ComponentBase
 	{
 		reservationCreateContext = new EditContext(reservationDto);
 		currVenue = await _venuesService.GetVenueById(VenueId);
-		
+
 		if (reservationDto.ReservationTime is not null)
 		{
 			ReservationDate = reservationDto.ReservationTime.Value.Date;
@@ -47,7 +47,7 @@ public partial class CreateReservation : ComponentBase
 		UserId = await _authHelper.GetUserId();
 
 		if (string.IsNullOrEmpty(UserId))
-			navManager?.NavigateTo("/login");
+			UserId = null;
 
 		await base.OnInitializedAsync();
 	}
@@ -95,14 +95,8 @@ public partial class CreateReservation : ComponentBase
 
 	protected void ToggleFav() => IsFavorite = !IsFavorite;
 
-	//protected static string AreaLabel(string? area)
-	//	=> string.IsNullOrWhiteSpace(area) ? "—" : (area == "smoking" ? "Smoking" : "Non-smoking");
-
 	private string? ValidateReservation()
 	{
-		if (string.IsNullOrEmpty(UserId))
-			return "You should be logged to create reservation";
-
 		if (VenueId <= 0)
 			return "Invalid venue.";
 
@@ -115,7 +109,8 @@ public partial class CreateReservation : ComponentBase
 		if (reservationDto.GuestsCount < 1)
 			return "Guests count must be at least 1.";
 
-		if (reservationDto.GuestsCount > 20) //TODO: Get the real numbers from db
+		//TODO: Get the real numbers from db
+		if (reservationDto.GuestsCount > 20)
 			return "Guests count cannot be more than 20.";
 
 		if (string.IsNullOrWhiteSpace(reservationDto.ContactName))
