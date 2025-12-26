@@ -162,5 +162,13 @@
 
 			return currUser.Id;
 		}
+
+		public async Task<bool> IsUserInRole(string role)
+		{
+			var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+			var user = authState.User;
+
+			return user.IsInRole(role);
+		}
 	}
 }

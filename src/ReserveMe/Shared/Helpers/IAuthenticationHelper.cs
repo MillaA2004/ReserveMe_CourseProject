@@ -16,5 +16,7 @@
 		Task<string> GetUserName(ClaimsPrincipal user);
 
 		Task<string?> GetUserId();
+
+		Task<bool> IsUserInRole(string role);
 	}
 }
