@@ -50,7 +50,10 @@
                     <div class="d-flex flex-nowrap justify-content-between">
                         <div class="d-flex ml-1 p-3">
                             <div class="d-flex align-items-center flex-nowrap gap-2">
-                                <a href="javascript:void(0);" class="btn btn-icon btn-sm btn-info-light btn-wave" data-bs-toggle="modal" data-bs-target="#editMenuName">
+                                <a href="javascript:void(0);"
+                                   class="btn btn-icon btn-sm btn-info-light btn-wave disabled"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#editMenuName">
                                     <i class="ri-edit-line"></i>
                                 </a>
                                 <p class="col-xl mb-0"><b>Name:</b> @venue.Name </p>
@@ -58,7 +61,7 @@
                         </div>
                         <div class="d-flex ml-1 p-3">
                             <div class="d-flex align-items-center flex-nowrap gap-2">
-                                <a href="javascript:void(0);" class="btn btn-icon btn-sm btn-info-light btn-wave" data-bs-toggle="modal" data-bs-target="#editLocation">
+                                <a href="javascript:void(0);" class="btn btn-icon btn-sm btn-info-light btn-wave disabled" data-bs-toggle="modal" data-bs-target="#editLocation">
                                     <i class="ri-edit-line"></i>
                                 </a>
                                 <p class="col-xl mb-0"> <b>Location:</b> @venue.Latitude° N, @venue.Longitude° W </p>
@@ -66,7 +69,7 @@
                         </div>
                         <div class="d-flex ml-1 p-3">
                             <div class="d-flex align-items-start flex-nowrap gap-2">
-                                <a href="javascript:void(0);" class="btn btn-icon btn-sm btn-info-light btn-wave" data-bs-toggle="modal" data-bs-target="#editDescription">
+                                <a href="javascript:void(0);" class="btn btn-icon btn-sm btn-info-light btn-wave disabled" data-bs-toggle="modal" data-bs-target="#editDescription">
                                     <i class="ri-edit-line"></i>
                                 </a>
                                 <p class="col-xl mb-0 pt-1"> <b>Description:</b> @venue.Description </p>
@@ -85,11 +88,11 @@
                 <div class="card-header justify-content-between bg-light">
                     <div class="card-title">Owners</div>
                     <div class="d-flex gap-3 align-items-center flex-wrap">
-                        @* <button type="button"
-                            class="btn btn-primary btn-wave"
-                            @onclick="ShowAddOwnerModal">
-                        <i class="bi bi-plus-circle me-1"></i> @LocalizationService.GetLocalizedString("AddOwner_Label")
-                    </button> *@
+                        <button type="button"
+                                class="btn btn-primary btn-wave disabled"
+                                @onclick="ShowAddOwnerModal">
+                            <i class="bi bi-plus-circle me-1"></i> Add Owner
+                        </button>
                     </div>
                 </div>
                 <div class="card-body p-0">
@@ -129,23 +132,29 @@
                                                 </span>
                                             </td>
 
-                                            @*  <AuthorizeView Context="adminAuth" Roles="SuperAdmin">
-                                            <Authorized>
-                                                <td class="text-center">
-                                                    <div class="d-flex gap-2 justify-content-center">
-                                                        <button class="btn btn-sm btn-info-light btn-wave" @onclick='() => ShowOwnerModal("info", owner.Id)'>
-                                                            <i class="ri-edit-line"></i>
-                                                        </button>
-                                                        <button class="btn btn-sm btn-danger-light btn-wave" @onclick='() => ConfirmRemoveOwner(owner.Id, owner.Email)'>
-                                                            <i class="ri-delete-bin-line"></i>
-                                                        </button>
-                                                        <button class="btn btn-icon btn-sm btn-success-light btn-wave" @onclick='() => ShowOwnerModal("pass", owner.Id)'>
-                                                            <i class="bx bx-key"></i>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </Authorized>
-                                        </AuthorizeView> *@
+                                            <AuthorizeView Context="adminAuth" Roles="SuperAdmin">
+                                                <Authorized>
+                                                    <td class="text-center">
+                                                        <div class="d-flex gap-2 justify-content-center">
+                                                            <button class="btn btn-sm btn-info-light btn-wave"
+                                                                    disabled
+                                                                    @onclick='() => ShowOwnerModal("info", owner.Id)'>
+                                                                <i class="ri-edit-line"></i>
+                                                            </button>
+                                                            <button class="btn btn-sm btn-danger-light btn-wave"
+                                                                    disabled
+                                                                    @onclick='() => ConfirmRemoveOwner(owner.Id, owner.Email)'>
+                                                                <i class="ri-delete-bin-line"></i>
+                                                            </button>
+                                                            <button class="btn btn-icon btn-sm btn-success-light btn-wave"
+                                                                    disabled
+                                                                    @onclick='() => ShowOwnerModal("pass", owner.Id)'>
+                                                                <i class="bx bx-key"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </Authorized>
+                                            </AuthorizeView>
                                         </tr>
                                     }
                                 }
@@ -163,10 +172,11 @@
             <div class="card custom-card overflow-hidden">
                 <div class="card-header justify-content-between bg-light">
                     <div class="card-title">Venue Waiters</div>
-                    <div class="d-flex gap-3 align-items-center flex-wrap">
-                        @* <a href="javascript:void(0);" class="btn btn-primary btn-wave" @onclick='() => ShowWeiterModal("true")'>
-                            <i class="bi bi-plus-circle me-1"></i> AddWaiter
-                        </a> *@
+                    <div class="d-flex gap-3 align-items-center flex-wrap" disabled>
+                        <a href="javascript:void(0);" class="btn btn-primary btn-wave disabled"
+                           @onclick='() => ShowWeiterModal("true")'>
+                            <i class="bi bi-plus-circle me-1"></i> Add Waiter
+                        </a>
                     </div>
                 </div>
                 <div class="card-body p-0">
@@ -216,11 +226,18 @@
                                             </td>
                                             <td style="width: 20%; text-align: center; vertical-align: middle;">
                                                 <div class="d-flex gap-2 justify-content-center">
-                                                    @* <button class="btn btn-icon btn-sm btn-info-light btn-wave" @onclick='() => ShowWeiterModal("false", waiter.Id)'>
+                                                    <button class="btn btn-icon btn-sm btn-info-light btn-wave"
+                                                            disabled
+                                                            @onclick='() => ShowWeiterModal("false", waiter.Id)'>
                                                         <i class="ri-edit-line"></i>
-                                                    </button> *@
+                                                    </button>
                                                     <button class="btn btn-icon btn-sm btn-danger-light btn-wave" @onclick='() => ShowRemoveWaiterModal(waiter.Email, waiter.Id)'>
                                                         <i class="ri-delete-bin-line"></i>
+                                                    </button>
+                                                    <button class="btn btn-icon btn-sm btn-success-light btn-wave"
+                                                            disabled
+                                                            @onclick='() => ShowWeiterModal("pass", waiter.Id)'>
+                                                        <i class="bx bx-key"></i>
                                                     </button>
                                                 </div>
                                             </td>
@@ -229,7 +246,7 @@
                                 }
                             </tbody>
                         </table>
-                            
+
                         @if (isDeleteModalVisible)
                         {
                             <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">

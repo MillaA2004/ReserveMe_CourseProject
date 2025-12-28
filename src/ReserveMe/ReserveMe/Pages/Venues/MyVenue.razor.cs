@@ -59,6 +59,15 @@
 			isDeleteModalVisible = true;
 		}
 
+		private void ConfirmRemoveOwner(string ownerId, string email)
+		{
+			throw new NotImplementedException();
+			//this.title = "Remove Owner";
+			//this.deleteMessage = $"Are you sure you want to remove owner '{email}'?";
+			//this.deleteWaiterId = ownerId;
+			//this.isDeleteModalVisible = true;
+		}
+
 		private async Task ConfirmDelete()
 		{
 			if (deleteWaiterId != string.Empty)
@@ -93,6 +102,21 @@
 			await _userService.ChangeWaiterMenu(waiterId, null);
 
 			StateHasChanged();
+		}
+
+		private async Task ShowWeiterModal(string isCreateModal, string? waiterId = null)
+		{
+			throw new NotImplementedException();
+		}
+
+		private async Task ShowOwnerModal(string isUpdate, string? ownerId = null)
+		{
+			throw new NotImplementedException();
+		}
+		private async Task ShowAddOwnerModal()
+		{
+			throw new NotImplementedException();
+			//await JS.InvokeVoidAsync("openAddOwnerOffcanvas");
 		}
 	}
 }
