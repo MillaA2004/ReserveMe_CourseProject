@@ -20,6 +20,8 @@
 
 		public static string GetUserById = $"{BaseAddressApi}users/getuserbyid";
 
+		public static string UpdateWaiterVenue = $"{BaseAddressApi}users/updateWaiterVenue";
+		
 		#endregion
 
 		#region Venues
@@ -27,6 +29,8 @@
 		public static string GetVenues = $"{BaseAddressApi}venues/getAll";
 
 		public static string GetVenueById = $"{BaseAddressApi}venues/getVenueById";
+
+		public static string GetMyVenue = $"{BaseAddressApi}venues/getVenueDetailsByVenueId";
 
 		public static string GetVenuesForClient = $"{BaseAddressApi}venues/getVenuesForClient";
 
