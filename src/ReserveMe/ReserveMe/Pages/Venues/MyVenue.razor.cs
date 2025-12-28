@@ -10,6 +10,7 @@
 
 	public partial class MyVenue
 	{
+		[Parameter] public int AdminVenueId { get; set; } = -1;
 		[Inject] private IVenuesService _venuesService { get; set; } = null!;
 		[Inject] private IAuthenticationHelper _authHelper { get; set; } = null!;
 		[Inject] private IUserService _userService { get; set; } = null!;
@@ -34,6 +35,9 @@
 			try
 			{
 				VenueId = await _authHelper.GetUserMenuId();
+
+				if (AdminVenueId != -1)
+					VenueId = AdminVenueId;
 
 				if (VenueId == 0)
 				{
