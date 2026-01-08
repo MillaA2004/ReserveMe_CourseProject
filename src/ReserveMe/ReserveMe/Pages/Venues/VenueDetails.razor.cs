@@ -28,7 +28,7 @@
 		private EditContext reviewEditContext = default!;
 
 		private bool _mapInitialized;
-		private string GoogleMapsApiKey => "api_key"; //Test purposes, use code below
+		private string GoogleMapsApiKey => "AIzaSyBJnwO6GqCkeycV3dEJ3i8waJlBZYCby4Q"; //Test purposes, use code below
 		/*=> Configuration["GoogleMaps:ApiKey"] ?? string.Empty;*/
 
 		private bool submitting;
@@ -46,32 +46,31 @@
 			this.recentReviews = await this._reviewsService.GetReviewsByVenueId(VenueId);
 		}
 
-		//TODO: MAP INTEGRATION
-		//protected override async Task OnAfterRenderAsync(bool firstRender)
-		//{
-		//	if (!_mapInitialized && venue is not null && venue.Latitude != 0 && venue.Longitude != 0)
-		//	{
-		//		var elementId = $"map-{venue.Id}";
-		//		try
-		//		{
-		//			await jsRuntime.InvokeVoidAsync(
-		//				"venueMap.init",
-		//				GoogleMapsApiKey,
-		//				elementId,
-		//				venue.Latitude,
-		//				venue.Longitude,
-		//				venue.Name
-		//			);
-		//			_mapInitialized = true;
-		//		}
-		//		catch (JSException ex)
-		//		{
-		//			Console.WriteLine(ex.Message);
-		//		}
-		//	}
+		protected override async Task OnAfterRenderAsync(bool firstRender)
+		{
+			if (!_mapInitialized && venue is not null && venue.Latitude != 0 && venue.Longitude != 0)
+			{
+				var elementId = $"map-{venue.Id}";
+				try
+				{
+					await jsRuntime.InvokeVoidAsync(
+						"venueMap.init",
+						GoogleMapsApiKey,
+						elementId,
+						venue.Latitude,
+						venue.Longitude,
+						venue.Name
+					);
+					_mapInitialized = true;
+				}
+				catch (JSException ex)
+				{
+					Console.WriteLine(ex.Message);
+				}
+			}
 
-		//	await base.OnAfterRenderAsync(firstRender);
-		//}
+			await base.OnAfterRenderAsync(firstRender);
+		}
 
 		private async Task SubmitReviewAsync()
 		{
