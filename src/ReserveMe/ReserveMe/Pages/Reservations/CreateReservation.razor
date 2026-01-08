@@ -1,0 +1,635 @@
+@page "/makeReservation/{VenueId:int}"
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>Reservation Management - ReserveMe</PageTitle>
+
+<div class="reservation-page">
+
+    <header class="reservation-header">
+        <img src="/assets/images/ReserveMe_logo.png" alt="ReserveMe Logo" class="app-logo" />
+        <h1>Make a reservation</h1>
+        <p>Fill in the details and confirm your booking.</p>
+    </header>
+
+    @if (!string.IsNullOrWhiteSpace(SuccessMessage))
+    {
+        <div class="banner banner-success">@SuccessMessage</div>
+    }
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <div class="banner banner-error">@ErrorMessage</div>
+    }
+
+    <div class="reservation-layout">
+        <!-- LEFT: form -->
+        <section class="card left-card">
+            <h2>Reservation details</h2>
+
+            <EditForm EditContext="reservationCreateContext" OnValidSubmit="@ReserveAsync">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Contact person</label>
+                        <InputText id="contactName"
+                                   @bind-Value="reservationDto.ContactName"
+                                   placeholder="Ivan Ivanov" />
+                        <span class="text-danger"><ValidationMessage For="@(() => reservationDto.ContactName)" /></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <InputText id="phone"
+                                   @bind-Value="reservationDto.ContactPhone"
+                                   placeholder="+1 555 123 456" />
+                        <span class="text-danger"><ValidationMessage For="@(() => reservationDto.ContactPhone)" /></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <InputText id="email"
+                                   @bind-Value="reservationDto.ContactEmail"
+                                   placeholder="john@example.com" />
+                        <span class="text-danger"><ValidationMessage For="@(() => reservationDto.ContactEmail)" /></span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label class="group-label">Reservation time</label>
+
+                            <div class="inline-pickers">
+                                <div class="inline-picker">
+                                    <label class="sub-label">Date</label>
+                                    <MudDatePicker @bind-Date="ReservationDate"
+                                                   Variant="Variant.Outlined"
+                                                   Margin="Margin.Dense"
+                                                   Dense="true"
+                                                   DateFormat="yyyy-MM-dd"
+                                                   Class="compact-field small-picker" />
+                                </div>
+
+                                <div class="inline-picker">
+                                    <label class="sub-label">Time</label>
+                                    <MudTimePicker @bind-Time="ReservationTime"
+                                                   Variant="Variant.Outlined"
+                                                   Margin="Margin.Dense"
+                                                   Dense="true"
+                                                   AmPm="false"
+                                                   TimeFormat="HH:mm"
+                                                   Class="compact-field small-picker" />
+                                    <span class="text-danger">
+                                        <ValidationMessage For="@(() => reservationDto.ReservationTime)" />
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Guests</label>
+                        <InputNumber id="guests"
+                                     @bind-Value="reservationDto.GuestsCount"
+                                     Min="1" Max="20" />
+                        <p class="helper-text">Mock: max 20 guests</p>
+                        <span class="text-danger"><ValidationMessage For="@(() => reservationDto.GuestsCount)" /></span>
+                    </div>
+
+                    @*    <div class="form-group">
+                        <label>Smoking area?</label>
+                        <InputSelect id="areaSelect" @bind-Value="Model.Area">
+                            <option value="" disabled>Select an area...</option>
+                            <option value="non_smoking">Non-smoking</option>
+                            <option value="smoking">Smoking</option>
+                        </InputSelect>
+                        <p class="helper-text">Mock: the venue has both areas</p>
+                        <span class="text-danger"><ValidationMessage For="@(() => Model.Area)" /></span>
+                    </div> *@
+                </div>
+
+                @*     <div class="form-group full-width">
+                    <label>Notes / comments</label>
+                    <InputTextArea id="notes"
+                                   rows="3"
+                                   placeholder="Any special requests?"
+                                   @bind-Value="Model.Notes"
+                                   @bind-Value:event="oninput" />
+                    <span class="text-danger"><ValidationMessage For="@(() => Model.Notes)" /></span>
+                </div> *@
+
+                @* Summary reflects bound values live *@
+                <div class="reservation-summary">
+                    <h3>Reservation summary</h3>
+                    <ul>
+                        <li><span>Contact:</span> <strong>@(reservationDto.ContactName ?? "—")</strong></li>
+                        <li><span>Phone:</span> <strong>@(reservationDto.ContactPhone ?? "—")</strong></li>
+                        <li><span>Email:</span> <strong>@(reservationDto.ContactEmail ?? "—")</strong></li>
+
+                        <li>
+                            <span>Date &amp; time:</span>
+                            <strong>
+                                @(
+                                                                ReservationDate.HasValue && ReservationTime.HasValue
+                                                                ? $"{ReservationDate:yyyy-MM-dd} {ReservationTime:hh\\:mm}"
+                                                                : "—"
+                                                                )
+                            </strong>
+                        </li>
+                        <li><span>Guests:</span> <strong>@(reservationDto.GuestsCount > 0 ? reservationDto.GuestsCount : "—")</strong></li>
+                        @* <li><span>Area:</span> <strong>@AreaLabel(Model.Area)</strong></li> *@
+                        @* <li><span>Notes:</span> <strong>@(string.IsNullOrWhiteSpace(Model.Notes) ? "—" : Model.Notes)</strong></li> *@
+                    </ul>
+                </div>
+
+                <button type="submit" class="primary-btn">Reserve</button>
+            </EditForm>
+        </section>
+
+        <!-- RIGHT: venue -->
+        <aside class="card right-card">
+            <div class="venue-image-box">
+                <img class="venue-main-image" src="@currVenue.ImageUrl" alt="Venue image" />
+                <div class="venue-gradient-overlay"></div>
+                @* 
+                <div class="venue-tags">
+                    @foreach (var tag in Venue.Tags)
+                    {
+                        <span class="venue-tag">@tag</span>
+                    }
+                </div> *@
+
+                @if (!string.IsNullOrEmpty(UserId))
+                {
+                    <button type="button"
+                            class="venue-favorite-btn"
+                            @onclick="ToggleFav"
+                            aria-label="Favorite">
+                        @(IsFavorite ? "❤️" : "🤍")
+                    </button>
+                }
+
+                <div class="venue-logo-overlay">
+                    <img class="venue-logo-inside" src="@currVenue.LogoUrl" alt="Venue logo" />
+                </div>
+            </div>
+
+            <div class="venue-info">
+                <h3>@currVenue.Name</h3>
+                <div class="venue-type">@currVenue.VenueTypeId</div>
+
+                <div class="venue-rating">
+                    <span class="stars">★★★★★</span>
+                    <strong>@(currVenue.Rating?.ToString("0.0") ?? "-")</strong>
+                    <span class="rating-count">(@currVenue.ReviewCount reviews)</span>
+                </div>
+
+                <div class="my-reservations">
+                    <p>Your reservations for this venue:</p>
+                    <a class="chip-link" href="/history?venueId=@currVenue.Id">My reservations</a>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+
+<style>
+    body {
+        margin: 0;
+        font-family: "Poppins", sans-serif;
+        background-color: #ffebbf;
+        color: #333;
+    }
+
+    .reservation-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px 16px 40px;
+    }
+
+    /* Header */
+    .reservation-header {
+        text-align: center;
+        margin-bottom: 24px;
+    }
+
+    .app-logo {
+        width: 110px;
+        display: block;
+        margin: 0 auto 10px;
+    }
+
+    .reservation-header h1 {
+        margin: 0;
+        font-size: 1.8rem;
+    }
+
+    .reservation-header p {
+        margin-top: 6px;
+        color: #666;
+    }
+
+    /* Layout */
+    .reservation-layout {
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+    }
+
+    /* Cards */
+    .card {
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 20px 18px 24px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    }
+
+    .left-card {
+        flex: 2;
+    }
+
+    .right-card {
+        flex: 1.2;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .card h2 {
+        margin: 0 0 16px;
+        font-size: 1.3rem;
+    }
+
+    /* Form */
+    form.main-form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .form-group {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 220px;
+    }
+
+        .form-group.full-width {
+            flex: 0 0 100%;
+            min-width: unset;
+        }
+
+    label {
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+        color: #444;
+    }
+
+    input, select, textarea {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 9px 10px;
+        font-size: 0.95rem;
+        font-family: inherit;
+        outline: none;
+        transition: border 0.15s ease, box-shadow 0.15s ease;
+        background: #fafafa;
+    }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #ffcc00;
+            box-shadow: 0 0 0 2px rgba(255,204,0,0.25);
+            background: #fff;
+        }
+
+    textarea {
+        resize: vertical;
+    }
+
+    .helper-text {
+        margin: 4px 0 0;
+        font-size: 0.8rem;
+        color: #888;
+    }
+
+    /* Summary box */
+    .reservation-summary {
+        margin-top: 10px;
+        background: #fffdf4;
+        border-radius: 14px;
+        padding: 12px 14px;
+        border: 1px dashed #ffd83d;
+    }
+
+        .reservation-summary h3 {
+            margin: 0 0 8px;
+            font-size: 1rem;
+        }
+
+        .reservation-summary ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .reservation-summary li {
+            display: flex;
+            gap: 6px;
+            font-size: 0.88rem;
+            margin-bottom: 4px;
+        }
+
+            .reservation-summary li span {
+                color: #777;
+                min-width: 120px;
+            }
+
+    /* Primary button */
+    .primary-btn {
+        margin-top: 16px;
+        width: 100%;
+        background: #53ce01;
+        color: #222;
+        border: none;
+        border-radius: 24px;
+        padding: 11px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+        .primary-btn:hover {
+            background: #48b400;
+            box-shadow: 0 4px 10px rgba(83,206,1,0.35);
+            transform: translateY(-1px);
+        }
+
+        .primary-btn:active {
+            transform: translateY(1px);
+            box-shadow: none;
+        }
+
+    .venue-image-box {
+        position: relative;
+        border-radius: 18px;
+        overflow: hidden;
+    }
+
+    .venue-main-image {
+        width: 100%;
+        height: 170px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .venue-gradient-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0) 20%, rgba(0,0,0,0.35) 100%);
+        pointer-events: none;
+    }
+
+    .venue-logo-overlay {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        background: #fff;
+        border-radius: 12px;
+        padding: 6px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .venue-logo-inside {
+        width: 52px;
+        height: 52px;
+        object-fit: contain;
+        border-radius: 10px;
+    }
+
+    .venue-tags {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .venue-tag {
+        background: rgba(255,216,61,0.95);
+        color: #222;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 9px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .venue-favorite-btn {
+        position: absolute;
+        top: 10px;
+        right: 12px;
+        background: rgba(255,255,255,0.85);
+        border: none;
+        border-radius: 50%;
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.1s ease;
+        backdrop-filter: blur(6px);
+    }
+
+        .venue-favorite-btn:hover {
+            background: #fff;
+            transform: scale(1.07);
+        }
+
+        .venue-favorite-btn:active {
+            transform: scale(0.95);
+        }
+
+    .venue-info h3 {
+        margin: 4px 0;
+        font-size: 1.15rem;
+    }
+
+    .venue-type {
+        margin: 2px 0 6px;
+        font-size: 0.9rem;
+        color: #777;
+    }
+
+    .venue-rating {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.9rem;
+    }
+
+    .stars {
+        color: #ffc107;
+    }
+
+    .rating-count {
+        color: #888;
+    }
+
+    .my-reservations {
+        margin-top: 6px;
+        padding-top: 10px;
+        border-top: 1px solid #f0f0f0;
+    }
+
+        .my-reservations p {
+            margin: 0 0 8px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+    .chip-link {
+        display: inline-block;
+        padding: 7px 14px;
+        border-radius: 999px;
+        background: #f5f5f5;
+        color: #333;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+        .chip-link:hover {
+            background: #ffd83d;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+            transform: translateY(-1px);
+        }
+
+    .banner {
+        border-radius: 14px;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+        font-size: 0.95rem;
+    }
+
+    .banner-success {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border: 1px solid #c8e6c9;
+    }
+
+    .banner-error {
+        background: #ffebee;
+        color: #c62828;
+        border: 1px solid #ffcdd2;
+    }
+
+    .mud-popover .mud-paper,
+    .mud-popover .mud-picker,
+    .mud-dialog .mud-paper {
+        background-color: #fff !important;
+    }
+
+    .group-label {
+        font-size: 0.95rem;
+        margin-bottom: 6px;
+        color: #444;
+        display: block;
+    }
+
+    .inline-pickers {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .inline-picker {
+        flex: 1 1 220px;
+        min-width: 200px;
+    }
+
+    .sub-label {
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .small-picker .mud-input-control-input-container {
+        min-height: 32px;
+    }
+
+    .small-picker .mud-input-slot {
+        padding: 4px 8px;
+        min-height: 32px;
+    }
+
+    .small-picker .mud-input {
+        font-size: 0.9rem;
+    }
+
+    .mud-popover .mud-timepicker .mud-button-root,
+    .mud-dialog .mud-timepicker .mud-button-root {
+        min-width: 28px;
+        height: 28px;
+        padding: 4px 8px;
+        font-size: 0.85rem;
+    }
+
+    .mud-popover .mud-picker,
+    .mud-dialog .mud-picker {
+        font-size: 0.9rem;
+    }
+
+    .mud-popover .mud-paper,
+    .mud-dialog .mud-paper {
+        padding: 8px 10px;
+    }
+
+    @@media (max-width: 600px) {
+        .inline-pickers {
+            flex-direction: column;
+            gap: 8px;
+        }
+    }
+
+    @@media (max-width: 900px) {
+        .reservation-layout {
+            flex-direction: column;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .card {
+            padding: 16px 12px 18px;
+        }
+
+        .reservation-header h1 {
+            font-size: 1.5rem;
+        }
+
+        .venue-main-image {
+            height: 150px;
+        }
+
+        .venue-logo-inside {
+            width: 45px;
+            height: 45px;
+        }
+    }
+</style>
