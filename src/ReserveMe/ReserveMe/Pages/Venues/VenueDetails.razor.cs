@@ -28,7 +28,8 @@
 		private EditContext reviewEditContext = default!;
 
 		private bool _mapInitialized;
-		private string GoogleMapsApiKey => Configuration["GoogleMaps:ApiKey"] ?? string.Empty;
+		private string GoogleMapsApiKey => "AIzaSyBJnwO6GqCkeycV3dEJ3i8waJlBZYCby4Q"; //Test purposes, use code below
+		/*=> Configuration["GoogleMaps:ApiKey"] ?? string.Empty;*/
 
 		private bool submitting;
 		private string? submitError;
