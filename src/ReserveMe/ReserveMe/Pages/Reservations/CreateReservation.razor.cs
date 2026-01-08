@@ -80,7 +80,7 @@ public partial class CreateReservation : ComponentBase
 			await _reservationsService.CreateReservationAsync(reservationDto);
 
 			SuccessMessage =
-				$"Reservation created (mock). Guest: {reservationDto.ContactName}, " +
+				$"Reservation created. Guest: {reservationDto.ContactName}, " +
 				$"Guests: {reservationDto.GuestsCount}, " +
 				$"Date: {reservationDto.ReservationTime:MM/dd/yyyy HH:mm}.";
 
