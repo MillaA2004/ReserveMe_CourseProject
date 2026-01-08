@@ -36,7 +36,7 @@
 			{
 				VenueId = await _authHelper.GetUserMenuId();
 
-				if (AdminVenueId != -1)
+				if (AdminVenueId != -1 && AdminVenueId != 0)
 					VenueId = AdminVenueId;
 
 				if (VenueId == 0)
