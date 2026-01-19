@@ -4,12 +4,6 @@
 
 <div id="@MapContainerId" style="width: 100%; height: 100%;"></div>
 
-@using Microsoft.Extensions.Configuration
-@inject IConfiguration Configuration
-@inject IJSRuntime JSRuntime
-
-<div id="@MapContainerId" style="width: 100%; height: 100%;"></div>
-
 @code {
     [Parameter] public double Lat { get; set; }
     [Parameter] public double Lng { get; set; }
@@ -21,7 +15,7 @@
     {
         if (firstRender)
         {
-            string? apiKey = Configuration["GoogleMaps:ApiKey"];
+            string apiKey = Configuration["GoogleMaps:ApiKey"];
 
             if (string.IsNullOrEmpty(apiKey))
             {
