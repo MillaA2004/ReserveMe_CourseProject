@@ -18,6 +18,7 @@
         [Inject] private IJSRuntime jsRuntime { get; set; }
         [Inject] private AuthenticationStateProvider authStateProvider { get; set; } = null!;
 
+        //string SelectedImage { get; set; } = "../assets/images/emptyImg.jpg";
         string SelectedLogo { get; set; } = "../assets/images/emptyImg.jpg";
         string SelectedVenueImage { get; set; } = "../assets/images/emptyImg.jpg";
 
@@ -134,6 +135,7 @@
         private void OnCancelVenue()
         {
             ResetVenueForm();
+            //SelectedImage = "../assets/images/emptyImg.jpg";
             SelectedLogo = "../assets/images/emptyImg.jpg";
             SelectedVenueImage = "../assets/images/emptyImg.jpg";
         }
