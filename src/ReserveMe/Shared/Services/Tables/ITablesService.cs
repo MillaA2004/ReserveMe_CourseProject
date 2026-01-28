@@ -5,5 +5,7 @@
 	public interface ITablesService
 	{
 		Task<List<TableDto>> GetTablesByVenueId(int venueId);
+
+		Task<List<TableDto>> GetAvailableTables(int venueId, DateTime reservationTime, int guestsCount);
 	}
 }

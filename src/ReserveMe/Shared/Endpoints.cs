@@ -28,6 +28,8 @@
 
 		public static string GetTablesByVenueId = $"{BaseAddressApi}tables/getTablesByVenueId";
 
+		public static string GetAvailableTables = $"{BaseAddressApi}tables/getAvailableTables";
+
 		#endregion
 
 		#region Venues

@@ -33,6 +33,27 @@
 			}
 		}
 
+		public async Task<List<TableDto>> GetAvailableTables(int venueId, DateTime reservationTime, int guestsCount)
+		{
+			try
+			{
+				var queryParams = new Dictionary<string, object>
+				{
+					{ "venueId", venueId },
+					{ "reservationTime", reservationTime.ToString("O") }, // Use ISO 8601 for DateTime
+					{ "guestsCount", guestsCount }
+				};
+
+				var result = await _provider.GetAsync<List<TableDto>>(Endpoints.GetAvailableTables, null, queryParams, null);
+
+				return result;
+			}
+			catch (Exception ex)
+			{
+				return new List<TableDto>();
+			}
+		}
+
 		#endregion
 	}
 }
