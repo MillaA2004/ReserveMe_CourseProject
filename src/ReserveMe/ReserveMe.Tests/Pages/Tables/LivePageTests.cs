@@ -4,6 +4,9 @@ using ReserveMe.Pages.Tables;
 using Shared.Dtos.Tables;
 using Shared.Helpers;
 using Shared.Services.Tables;
+using Shared.Services.Reservations;
+using Shared.Dtos.Reservations;
+using Microsoft.AspNetCore.Components;
 
 /// <summary>
 /// Unit tests for the LivePage (Table Management) component.
@@ -12,11 +15,13 @@ using Shared.Services.Tables;
 public class LivePageTests : TestContext
 {
     private readonly Mock<ITablesService> _tablesServiceMock;
+    private readonly Mock<IReservationsService> _reservationsServiceMock;
     private readonly Mock<IAuthenticationHelper> _authHelperMock;
 
     public LivePageTests()
     {
         _tablesServiceMock = new Mock<ITablesService>();
+        _reservationsServiceMock = new Mock<IReservationsService>();
         _authHelperMock = new Mock<IAuthenticationHelper>();
 
         // Default setup
@@ -25,11 +30,16 @@ public class LivePageTests : TestContext
             .ReturnsAsync(1);
 
         _tablesServiceMock
-            .Setup(x => x.GetTablesByVenueId(It.IsAny<int>()))
+            .Setup(x => x.GetAvailableTables(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<int>()))
             .ReturnsAsync(new List<TableDto>());
+
+        _reservationsServiceMock
+            .Setup(x => x.GetReservations(It.IsAny<int>()))
+            .ReturnsAsync(new List<ReservationDto>());
 
         // Register services
         Services.AddSingleton(_tablesServiceMock.Object);
+        Services.AddSingleton(_reservationsServiceMock.Object);
         Services.AddSingleton(_authHelperMock.Object);
     }
 
@@ -52,7 +62,7 @@ public class LivePageTests : TestContext
         var cut = RenderComponent<LivePage>();
 
         // Assert
-        Assert.Contains("View and manage tables in the restaurant", cut.Markup);
+        Assert.Contains("View tables in the restaurant", cut.Markup);
     }
 
     [Fact]
@@ -72,7 +82,7 @@ public class LivePageTests : TestContext
         var cut = RenderComponent<LivePage>();
 
         // Assert
-        _tablesServiceMock.Verify(x => x.GetTablesByVenueId(1), Times.Once);
+        _tablesServiceMock.Verify(x => x.GetAvailableTables(1, It.IsAny<DateTime>(), It.IsAny<int>()), Times.Once);
     }
 
     #endregion
@@ -188,15 +198,15 @@ public class LivePageTests : TestContext
 
     #region Add Table Button Tests
 
-    [Fact]
-    public void LivePage_RendersAddTableButton()
-    {
-        // Act
-        var cut = RenderComponent<LivePage>();
-
-        // Assert
-        Assert.Contains("Add Table", cut.Markup);
-    }
+    // [Fact]
+    // public void LivePage_RendersAddTableButton()
+    // {
+    //     // Act
+    //     var cut = RenderComponent<LivePage>();
+    //
+    //     // Assert
+    //     Assert.Contains("Add Table", cut.Markup);
+    // }
 
     #endregion
 

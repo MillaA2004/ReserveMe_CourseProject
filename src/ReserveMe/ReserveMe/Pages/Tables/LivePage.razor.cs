@@ -55,7 +55,8 @@
                 return;
             }
 
-            _tablesFromDb = await _tablesService.GetTablesByVenueId(VenueId);
+            var reservationTime = (_reservationDate ?? DateTime.Today).Add(_reservationTime ?? TimeSpan.Zero);
+            _tablesFromDb = await _tablesService.GetAvailableTables(VenueId, reservationTime, _reservationGuestCount);
             _reservationsFromDb = await _reservationsService.GetReservations(VenueId);
 
             await LoadTables();
