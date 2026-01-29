@@ -54,6 +54,43 @@
 			}
 		}
 
+		public async Task<int> CreateTable(TableDto table)
+		{
+			try
+			{
+				var result = await _provider.PostAsync<TableDto, int>(Endpoints.CreateTable, table);
+				return result;
+			}
+			catch (Exception ex)
+			{
+				return 0;
+			}
+		}
+
+		public async Task UpdateTable(TableDto table)
+		{
+			try
+			{
+				await _provider.PutAsync<TableDto, object>(Endpoints.UpdateTable, table);
+			}
+			catch (Exception ex)
+			{
+			}
+		}
+
+		public async Task DeleteTable(int tableId)
+		{
+			try
+			{
+				var uri = string.Format(Endpoints.DeleteTable + "/{0}", tableId);
+
+				await _provider.DeleteAsync<object, object>(uri, new { });
+			}
+			catch (Exception ex)
+			{
+			}
+		}
+
 		#endregion
 	}
 }

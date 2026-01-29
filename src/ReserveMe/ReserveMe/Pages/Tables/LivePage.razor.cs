@@ -56,7 +56,7 @@
             }
 
             var reservationTime = (_reservationDate ?? DateTime.Today).Add(_reservationTime ?? TimeSpan.Zero);
-            _tablesFromDb = await _tablesService.GetAvailableTables(VenueId, reservationTime, _reservationGuestCount);
+            _tablesFromDb = await _tablesService.GetTablesByVenueId(VenueId);
             _reservationsFromDb = await _reservationsService.GetReservations(VenueId);
 
             await LoadTables();
@@ -85,6 +85,7 @@
                     return new TableViewModel
                     {
                         Id = Guid.NewGuid(),
+                        DbId = table.Id,
                         TableNumber = table.TableNumber,
                         Capacity = table.Capacity,
                         IsActive = table.IsActive,
@@ -148,10 +149,20 @@
             _tableDialogOpen = true;
         }
 
-        private void SaveTable()
+        private async Task SaveTable()
         {
+            var dto = new TableDto
+            {
+                Id = _isEditMode ? _editingTable.DbId : 0,
+                VenueId = VenueId,
+                TableNumber = _editingTable.TableNumber,
+                Capacity = _editingTable.Capacity,
+                IsActive = _editingTable.IsActive
+            };
+
             if (_isEditMode)
             {
+                await _tablesService.UpdateTable(dto);
                 var table = _tables.First(t => t.Id == _editingTable.Id);
                 table.TableNumber = _editingTable.TableNumber;
                 table.Capacity = _editingTable.Capacity;
@@ -160,14 +171,9 @@
             }
             else
             {
-                _tables.Add(new TableViewModel
-                {
-                    Id = Guid.NewGuid(),
-                    TableNumber = _editingTable.TableNumber,
-                    Capacity = _editingTable.Capacity,
-                    Status = TableStatus.Available,
-                    IsActive = true
-                });
+                var id = await _tablesService.CreateTable(dto);
+                _editingTable.DbId = id;
+                _tables.Add(_editingTable);
             }
 
             _tableDialogOpen = false;
@@ -187,10 +193,25 @@
             _reserveDialogOpen = true;
         }
 
-        private void ConfirmReservation()
+        private async Task ConfirmReservation()
         {
             if (_selectedTable == null || string.IsNullOrWhiteSpace(_reservationCustomerName))
                 return;
+
+            var reservationTime = (_reservationDate ?? DateTime.Today).Add(_reservationTime ?? TimeSpan.Zero);
+
+            var dto = new ReservationDto
+            {
+                VenueId = VenueId,
+                TableNumber = _selectedTable.TableNumber,
+                ContactName = _reservationCustomerName,
+                ContactPhone = _reservationPhoneNumber,
+                ReservationTime = reservationTime,
+                GuestsCount = _reservationGuestCount,
+                Status = ReservationStatus.Approved
+            };
+
+            await _reservationsService.CreateReservationAsync(dto);
 
             _selectedTable.Status = TableStatus.Reserved;
             _selectedTable.ActiveReservationId = Guid.NewGuid();
@@ -220,9 +241,11 @@
                 _deleteDialogOpen = true;
         }
 
-        private void DeleteTable()
+        private async Task DeleteTable()
         {
             if (_selectedTable == null) return;
+
+            await _tablesService.DeleteTable(_selectedTable.DbId);
 
             _tables.Remove(_selectedTable);
             _selectedTable = null;
@@ -230,10 +253,22 @@
             _detailsDrawerOpen = false;
         }
 
-        private void ToggleTableActive()
+        private async Task ToggleTableActive()
         {
             if (_selectedTable == null) return;
+            
             _selectedTable.IsActive = !_selectedTable.IsActive;
+
+            var dto = new TableDto
+            {
+                Id = _selectedTable.DbId,
+                VenueId = VenueId,
+                TableNumber = _selectedTable.TableNumber,
+                Capacity = _selectedTable.Capacity,
+                IsActive = _selectedTable.IsActive
+            };
+
+            await _tablesService.UpdateTable(dto);
         }
 
         private void ChangeTableStatus(TableViewModel table, TableStatus status)
@@ -293,6 +328,7 @@
     public class TableViewModel
     {
         public Guid Id { get; set; }
+        public int DbId { get; set; }
         public int TableNumber { get; set; }
         public int Capacity { get; set; }
         public bool IsActive { get; set; }

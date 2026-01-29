@@ -96,6 +96,19 @@ namespace Application.Reservations.Commands
                     $"GuestsCount exceeds venue capacity ({venueCapacity}).",
                     0);
 
+            if (data.TableNumber > 0)
+            {
+                var tableCapacity = await _context.Tables
+                    .Where(t => t.VenueId == data.VenueId && t.TableNumber == data.TableNumber && t.IsActive)
+                    .Select(t => t.Capacity)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (tableCapacity > 0 && data.GuestsCount > tableCapacity)
+                {
+                    throw new ValidationException($"Броят гости ({data.GuestsCount}) надхвърля капацитета на избраната маса ({tableCapacity}).");
+                }
+            }
+
             var start = data.ReservationTime.Value;
 
             

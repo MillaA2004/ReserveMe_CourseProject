@@ -24,11 +24,17 @@
 
 		#endregion
 
-		#region Users
+		#region Tables
 
 		public static string GetTablesByVenueId = $"{BaseAddressApi}tables/getTablesByVenueId";
 
 		public static string GetAvailableTables = $"{BaseAddressApi}tables/getAvailableTables";
+
+		public static string CreateTable = $"{BaseAddressApi}tables/create";
+
+		public static string UpdateTable = $"{BaseAddressApi}tables/update";
+
+		public static string DeleteTable = $"{BaseAddressApi}tables/delete";
 
 		#endregion
 
@@ -43,6 +49,8 @@
 		public static string GetVenuesForClient = $"{BaseAddressApi}venues/getVenuesForClient";
 
 		public static string CreateVenue = $"{BaseAddressApi}venues/create";
+
+		public static string UpdateVenue = $"{BaseAddressApi}venues/update";
 
 		public static string DeleteVenue = $"{BaseAddressApi}venues/delete";
 

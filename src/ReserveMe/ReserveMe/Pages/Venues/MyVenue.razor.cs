@@ -1,9 +1,12 @@
 ﻿namespace ReserveMe.Pages.Venues
 {
 	using Microsoft.AspNetCore.Components;
+	using Microsoft.JSInterop;
+	using Microsoft.Extensions.Configuration;
 	using Shared.Dtos.Reviews;
 	using Shared.Dtos.Users;
 	using Shared.Dtos.Venues;
+	using Shared.Requests.Venues;
 	using Shared.Helpers;
 	using Shared.Services.Users;
 	using Shared.Services.Venues;
@@ -15,6 +18,8 @@
 		[Inject] private IAuthenticationHelper _authHelper { get; set; } = null!;
 		[Inject] private IUserService _userService { get; set; } = null!;
 		[Inject] private NavigationManager? navManager { get; set; } = null!;
+		[Inject] private IJSRuntime JS { get; set; } = null!;
+		[Inject] private IConfiguration Configuration { get; set; } = null!;
 
 		public int VenueId { get; set; }
 
@@ -29,6 +34,9 @@
 		private string confirmTitle = string.Empty;
 		private string confirmMessage = string.Empty;
 		private string deleteWaiterId = string.Empty;
+
+		private double? selectedLat;
+		private double? selectedLng;
 
 		protected override async Task OnInitializedAsync()
 		{
@@ -53,6 +61,51 @@
 			{
 				Console.WriteLine(ex.Message);
 			}
+		}
+
+		private async Task OpenEditLocationModal()
+		{
+			if (venue == null) return;
+
+			selectedLat = venue.Latitude;
+			selectedLng = venue.Longitude;
+
+			var apiKey = Configuration["GoogleMaps:ApiKey"];
+
+			await Task.Delay(500);
+
+			await JS.InvokeVoidAsync("mapPicker.init", "map-picker-container", apiKey, selectedLat ?? 0, selectedLng ?? 0, DotNetObjectReference.Create(this));
+		}
+
+		[JSInvokable]
+		public void OnMapClick(double lat, double lng)
+		{
+			selectedLat = lat;
+			selectedLng = lng;
+			StateHasChanged();
+		}
+
+		private async Task SaveLocation()
+		{
+			if (venue == null || !selectedLat.HasValue || !selectedLng.HasValue) return;
+
+			var request = new SaveVenueRequest
+			{
+				Name = venue.Name,
+				Description = venue.Description,
+				VenueTypeId = venue.VenueTypeId,
+				Latitude = selectedLat.Value,
+				Longitude = selectedLng.Value,
+				LogoUrl = venue.LogoUrl,
+				ImageUrl = venue.ImageUrl
+			};
+
+			await _venuesService.UpdateVenueAsync(VenueId, request);
+
+			venue.Latitude = selectedLat.Value;
+			venue.Longitude = selectedLng.Value;
+
+			StateHasChanged();
 		}
 
 		private void ShowRemoveWaiterModal(string email, string id)

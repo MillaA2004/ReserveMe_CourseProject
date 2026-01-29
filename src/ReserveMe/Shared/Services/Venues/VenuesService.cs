@@ -115,6 +115,22 @@
 
 		#endregion
 
+		#region PUT
+
+		public async Task UpdateVenueAsync(int venueId, SaveVenueRequest venueDto)
+		{
+			try
+			{
+				var uri = string.Format(Endpoints.UpdateVenue + "/{0}", venueId);
+				await _provider.PutAsync<SaveVenueRequest, object>(uri, venueDto);
+			}
+			catch (Exception ex)
+			{
+			}
+		}
+
+		#endregion
+
 		#region DELETE
 
 		public async Task DeleteVenue(int id)

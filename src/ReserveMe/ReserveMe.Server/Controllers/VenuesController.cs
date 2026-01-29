@@ -54,6 +54,16 @@
 			return NoContent();
 		}
 
+		[HttpPut("update/{venueId}")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesDefaultResponseType]
+		public async Task<IActionResult> UpdateVenue(int venueId, SaveVenueRequest venue)
+		{
+			await Mediator.Send(new UpdateVenueCommand(venueId, venue));
+
+			return NoContent();
+		}
+
 		#endregion
 
 		#region DELETE

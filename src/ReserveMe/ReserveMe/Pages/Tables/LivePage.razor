@@ -9,8 +9,11 @@
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
             <h4 class="fw-bold mb-1">Table Management</h4>
-            <p class="text-muted mb-0">View tables in the restaurant</p>
+            <p class="text-muted mb-0">View and manage tables in the restaurant</p>
         </div>
+        <button class="btn btn-primary btn-wave" @onclick="OpenAddTableDialog">
+            <i class="bi bi-plus-circle me-1"></i> Add Table
+        </button>
     </div>
 
     @* Statistics *@
@@ -206,6 +209,134 @@
                     }
                 </ul>
             }
+        </div>
+        <div class="offcanvas-footer p-3 border-top">
+            <div class="d-grid gap-2">
+                @if (_selectedTable.Status == TableStatus.Available && _selectedTable.IsActive)
+                {
+                    <button class="btn btn-primary" @onclick="OpenReserveTableDialog">
+                        <i class="bi bi-calendar-plus me-2"></i>Reserve Table
+                    </button>
+                }
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary flex-grow-1" @onclick="OpenEditTableDialog">
+                        <i class="bi bi-pencil me-2"></i>Edit
+                    </button>
+                    @if (_selectedTable.Status == TableStatus.Available)
+                    {
+                        <button class="btn btn-outline-danger" @onclick="OpenDeleteConfirmation">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    }
+                </div>
+
+                <button class="btn @(_selectedTable.IsActive ? "btn-outline-secondary" : "btn-outline-success")" @onclick="ToggleTableActive">
+                    <i class="bi @(_selectedTable.IsActive ? "bi-eye-slash" : "bi-eye") me-2"></i>
+                    @(_selectedTable.IsActive ? "Deactivate" : "Activate")
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@* Table Dialog (Add/Edit) *@
+@if (_tableDialogOpen)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(_isEditMode ? "Edit Table" : "Add New Table")</h5>
+                    <button type="button" class="btn-close" @onclick="() => _tableDialogOpen = false"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Table Number</label>
+                        <input type="number" class="form-control" @bind="_editingTable.TableNumber" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Capacity (Seats)</label>
+                        <input type="number" class="form-control" @bind="_editingTable.Capacity" />
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" @bind="_editingTable.IsActive" id="isActiveCheck">
+                        <label class="form-check-label" for="isActiveCheck">
+                            Is Active
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" @onclick="() => _tableDialogOpen = false">Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveTable">Save Table</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@* Reservation Dialog *@
+@if (_reserveDialogOpen)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Reservation - Table #@_selectedTable.TableNumber</h5>
+                    <button type="button" class="btn-close" @onclick="() => _reserveDialogOpen = false"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Customer Name</label>
+                        <input type="text" class="form-control" @bind="_reservationCustomerName" placeholder="Enter name" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" @bind="_reservationPhoneNumber" placeholder="Enter phone" />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Date</label>
+                            <input type="date" class="form-control" @bind="_reservationDate" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Time</label>
+                            <input type="time" class="form-control" value="@_reservationTimeString" @onchange="OnTimeChanged" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Guests Count (Max @_selectedTable.Capacity)</label>
+                        <input type="number" class="form-control" @bind="_reservationGuestCount" min="1" max="@_selectedTable.Capacity" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" @onclick="() => _reserveDialogOpen = false">Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick="ConfirmReservation">Confirm Reservation</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@* Delete Confirmation *@
+@if (_deleteDialogOpen)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger">Delete Table?</h5>
+                    <button type="button" class="btn-close" @onclick="() => _deleteDialogOpen = false"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="bi bi-exclamation-triangle fs-1 text-danger mb-3 d-block"></i>
+                    <p class="mb-0">Are you sure you want to delete Table #@_selectedTable.TableNumber?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" @onclick="() => _deleteDialogOpen = false">Cancel</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteTable">Delete</button>
+                </div>
+            </div>
         </div>
     </div>
 }

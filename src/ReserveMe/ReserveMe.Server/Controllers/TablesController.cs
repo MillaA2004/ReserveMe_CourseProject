@@ -21,5 +21,37 @@
 		}
 
 		#endregion
+
+		#region CREATE
+
+		[HttpPost("create")]
+		public async Task<ActionResult<int>> CreateTable(TableDto table)
+		{
+			return await Mediator.Send(new Application.Tables.Commands.CreateTableCommand(table));
+		}
+
+		#endregion
+
+		#region UPDATE
+
+		[HttpPut("update")]
+		public async Task<ActionResult> UpdateTable(TableDto table)
+		{
+			await Mediator.Send(new Application.Tables.Commands.UpdateTableCommand(table));
+			return NoContent();
+		}
+
+		#endregion
+
+		#region DELETE
+
+		[HttpDelete("delete/{tableId}")]
+		public async Task<ActionResult> DeleteTable(int tableId)
+		{
+			await Mediator.Send(new Application.Tables.Commands.DeleteTableCommand(tableId));
+			return NoContent();
+		}
+
+		#endregion
 	}
 }
