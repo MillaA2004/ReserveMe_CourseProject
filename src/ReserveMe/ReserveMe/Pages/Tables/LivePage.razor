@@ -11,9 +11,14 @@
             <h4 class="fw-bold mb-1">Table Management</h4>
             <p class="text-muted mb-0">View and manage tables in the restaurant</p>
         </div>
-        <button class="btn btn-primary btn-wave" @onclick="OpenAddTableDialog">
-            <i class="bi bi-plus-circle me-1"></i> Add Table
-        </button>
+        <div class="d-flex gap-2">
+            <button class="btn btn-success btn-wave" @onclick="() => OpenReserveTableDialog(null)">
+                <i class="bi bi-calendar-plus me-1"></i> Reserve Table
+            </button>
+            <button class="btn btn-primary btn-wave" @onclick="OpenAddTableDialog">
+                <i class="bi bi-plus-circle me-1"></i> Add Table
+            </button>
+        </div>
     </div>
 
     @* Statistics *@
@@ -56,8 +61,8 @@
     <div class="card mb-4">
         <div class="card-body">
             <div class="d-flex flex-wrap gap-2">
-                <button class="btn @(_statusFilter == null ? "btn-primary" : "btn-outline-secondary")"
-                        @onclick="() => _statusFilter = null">
+                <button class="btn @(_statusFilter == null && _activeFilter == null ? "btn-primary" : "btn-outline-secondary")"
+                        @onclick="() => { _statusFilter = null; _activeFilter = null; }">
                     All
                 </button>
                 <button class="btn @(_statusFilter == TableStatus.Available ? "btn-success" : "btn-outline-success")"
@@ -214,7 +219,7 @@
             <div class="d-grid gap-2">
                 @if (_selectedTable.Status == TableStatus.Available && _selectedTable.IsActive)
                 {
-                    <button class="btn btn-primary" @onclick="OpenReserveTableDialog">
+                    <button class="btn btn-primary" @onclick="() => OpenReserveTableDialog(_selectedTable)">
                         <i class="bi bi-calendar-plus me-2"></i>Reserve Table
                     </button>
                 }
@@ -282,10 +287,29 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">New Reservation - Table #@_selectedTable.TableNumber</h5>
+                    <h5 class="modal-title">
+                        @( _selectedTable != null ? $"New Reservation - Table #{_selectedTable.TableNumber}" : "New Reservation" )
+                    </h5>
                     <button type="button" class="btn-close" @onclick="() => _reserveDialogOpen = false"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Table</label>
+                        @if (_selectedTable != null)
+                        {
+                            <input type="text" class="form-control" value="Table #@_selectedTable.TableNumber" disabled />
+                        }
+                        else
+                        {
+                            <select class="form-select" @bind="_reservationTableNumber">
+                                <option value="0">Auto-assign table</option>
+                                @foreach (var t in _tables.Where(t => t.IsActive && t.Status == TableStatus.Available))
+                                {
+                                    <option value="@t.TableNumber">Table #@t.TableNumber (Capacity: @t.Capacity)</option>
+                                }
+                            </select>
+                        }
+                    </div>
                     <div class="mb-3">
                         <label class="form-label">Customer Name</label>
                         <input type="text" class="form-control" @bind="_reservationCustomerName" placeholder="Enter name" />
@@ -305,8 +329,12 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Guests Count (Max @_selectedTable.Capacity)</label>
-                        <input type="number" class="form-control" @bind="_reservationGuestCount" min="1" max="@_selectedTable.Capacity" />
+                        @{
+                            int maxCapacity = _selectedTable?.Capacity ?? (_tables.FirstOrDefault(t => t.TableNumber == _reservationTableNumber)?.Capacity ?? 0);
+                            if (maxCapacity == 0 && _reservationTableNumber == 0) maxCapacity = _tables.Any() ? _tables.Max(t => t.Capacity) : 10;
+                        }
+                        <label class="form-label">Guests Count (Max @maxCapacity)</label>
+                        <input type="number" class="form-control" @bind="_reservationGuestCount" min="1" max="@maxCapacity" />
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -330,7 +358,7 @@
                 </div>
                 <div class="modal-body text-center py-4">
                     <i class="bi bi-exclamation-triangle fs-1 text-danger mb-3 d-block"></i>
-                    <p class="mb-0">Are you sure you want to delete Table #@_selectedTable.TableNumber?</p>
+                    <p class="mb-0">Are you sure you want to delete Table #@(_selectedTable?.TableNumber)?</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" @onclick="() => _deleteDialogOpen = false">Cancel</button>

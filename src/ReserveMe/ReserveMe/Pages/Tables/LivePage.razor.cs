@@ -41,6 +41,7 @@
         private DateTime? _reservationDate = DateTime.Today;
         private TimeSpan? _reservationTime = new TimeSpan(19, 0, 0);
         private int _reservationGuestCount = 2;
+        private int _reservationTableNumber = 0;
 
         private string _reservationTimeString = "19:00";
 
@@ -179,31 +180,42 @@
             _tableDialogOpen = false;
         }
 
-        private void OpenReserveTableDialog()
+        private void OpenReserveTableDialog(TableViewModel? table = null)
         {
-            if (_selectedTable == null) return;
+            if (table != null)
+            {
+                _selectedTable = table;
+                _reservationTableNumber = table.TableNumber;
+                _reservationGuestCount = Math.Min(2, table.Capacity);
+            }
+            else
+            {
+                _reservationTableNumber = 0;
+                _reservationGuestCount = 2;
+            }
 
             _reservationCustomerName = string.Empty;
             _reservationPhoneNumber = string.Empty;
             _reservationDate = DateTime.Today;
             _reservationTime = new TimeSpan(19, 0, 0);
             _reservationTimeString = "19:00";
-            _reservationGuestCount = 2;
 
             _reserveDialogOpen = true;
         }
 
         private async Task ConfirmReservation()
         {
-            if (_selectedTable == null || string.IsNullOrWhiteSpace(_reservationCustomerName))
+            if (string.IsNullOrWhiteSpace(_reservationCustomerName))
                 return;
+
+            int tableNumber = _selectedTable?.TableNumber ?? _reservationTableNumber;
 
             var reservationTime = (_reservationDate ?? DateTime.Today).Add(_reservationTime ?? TimeSpan.Zero);
 
             var dto = new ReservationDto
             {
                 VenueId = VenueId,
-                TableNumber = _selectedTable.TableNumber,
+                TableNumber = tableNumber,
                 ContactName = _reservationCustomerName,
                 ContactPhone = _reservationPhoneNumber,
                 ReservationTime = reservationTime,
@@ -213,13 +225,18 @@
 
             await _reservationsService.CreateReservationAsync(dto);
 
-            _selectedTable.Status = TableStatus.Reserved;
-            _selectedTable.ActiveReservationId = Guid.NewGuid();
-            _selectedTable.CustomerName = _reservationCustomerName;
-            _selectedTable.CustomerPhone = _reservationPhoneNumber;
-            _selectedTable.ReservationDate = _reservationDate;
-            _selectedTable.ReservationTime = _reservationTime;
-            _selectedTable.GuestCount = _reservationGuestCount;
+            // If a specific table was selected, update its UI status immediately
+            var tableToUpdate = _tables.FirstOrDefault(t => t.TableNumber == tableNumber);
+            if (tableToUpdate != null)
+            {
+                tableToUpdate.Status = TableStatus.Reserved;
+                tableToUpdate.ActiveReservationId = Guid.NewGuid();
+                tableToUpdate.CustomerName = _reservationCustomerName;
+                tableToUpdate.CustomerPhone = _reservationPhoneNumber;
+                tableToUpdate.ReservationDate = _reservationDate;
+                tableToUpdate.ReservationTime = _reservationTime;
+                tableToUpdate.GuestCount = _reservationGuestCount;
+            }
 
             _reserveDialogOpen = false;
         }
