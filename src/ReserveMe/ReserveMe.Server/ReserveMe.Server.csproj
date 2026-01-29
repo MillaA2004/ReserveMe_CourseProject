@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <EnableDefaultResourceItems>false</EnableDefaultResourceItems>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,9 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\Client\" />
-    <Folder Include="StaticFiles\" />
-    <Folder Include="Storage\Profiles\" />
+    <Folder Include="Controllers\Client" />
+    <Folder Include="StaticFiles" />
+    <Folder Include="Storage\Profiles" />
   </ItemGroup>
 
   <ItemGroup>
